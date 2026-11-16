@@ -1,0 +1,52 @@
+---
+/** The answer, as the reference's quote: one large serif line, one word marked in lime. */
+---
+
+<section class="pc-section pc-cover quote">
+  <div class="pc-wrap pc-pad body">
+    <p class="pc-serif line" data-reveal>
+      Forests don't need more monitoring. They need <mark>management</mark>.
+    </p>
+    <p class="pc-lead by">AboveForest is the operating system that makes it possible.</p>
+  </div>
+</section>
+
+<style>
+  .quote {
+    background:
+      radial-gradient(60% 60% at 50% 100%, rgb(184 242 122 / 0.08), transparent 70%),
+      var(--pc-dark);
+  }
+
+  .body {
+    display: grid;
+    justify-items: center;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .line {
+    max-width: 18ch;
+    font-size: clamp(38px, 5vw, 76px);
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+
+  mark {
+    padding: 0 0.12em;
+    border-radius: 0.12em;
+    background: var(--pc-lime);
+    color: var(--pc-lime-ink);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* Inside the mark, the reveal flashes deep green instead of lime on lime. */
+  mark {
+    --reveal: #2f6b12;
+  }
+
+  .by {
+    max-width: 34ch;
+  }
+</style>

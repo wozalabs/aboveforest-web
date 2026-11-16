@@ -1,0 +1,11 @@
+---
+/** A light grey block standing in for an image. Replace with the real asset later. */
+interface Props {
+  ratio?: string;
+  class?: string;
+  label?: string;
+}
+const { ratio, class: className = '', label = 'Image placeholder' } = Astro.props;
+---
+
+<div class={`pb-ph ${className}`} style={ratio ? `aspect-ratio: ${ratio}` : undefined} role="img" aria-label={label}></div>

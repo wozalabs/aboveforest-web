@@ -1,0 +1,90 @@
+---
+/** The problem, in two beats: the situation, then the answer. */
+import BrandField from './BrandField.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+---
+
+<section class="pb-section problem">
+  <div class="intro">
+    <h2 class="pb-h2 pb-reveal">Forests are offline.</h2>
+    <p class="pb-lead pb-reveal" style="--i: 1">
+      Most forests are still invisible to the systems meant to protect them. The most critical ecosystem on Earth is
+      still governed with field visits, static reports and outdated inventories. No traceability. No interoperability. No
+      ground truth.
+    </p>
+  </div>
+  {
+    look === 'g2' ? (
+      <BrandField mode="field" palette="moss" seed={4} class="answer-field pb-reveal">
+        <div class="glass glass-tint answer-glass">
+          <p class="big">Forests don't need more monitoring. They need management.</p>
+          <p class="small light">AboveForest is the operating system that makes it possible.</p>
+        </div>
+      </BrandField>
+    ) : (
+      <div class="answer pb-reveal" style="--i: 2">
+        <p class="big">Forests don't need more monitoring. They need management.</p>
+        <p class="pb-body small">AboveForest is the operating system that makes it possible.</p>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .problem {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px clamp(40px, 6vw, 96px);
+    align-items: end;
+  }
+
+  .intro .pb-lead {
+    max-width: 500px;
+    margin-top: 24px;
+  }
+
+  .answer {
+    padding: 32px;
+    border-radius: var(--pb-radius);
+    background: var(--pb-card);
+    box-shadow:
+      0 0 0 1px var(--pb-card-line),
+      var(--pb-shadow-card);
+  }
+
+  .problem :global(.answer-field) {
+    display: grid;
+    align-items: end;
+    min-height: 340px;
+    padding: 20px;
+  }
+
+  .answer-glass {
+    padding: 26px 28px;
+  }
+
+  .light {
+    color: rgb(255 255 255 / 0.85);
+    font-size: 15.5px;
+  }
+
+  .big {
+    font-size: clamp(24px, 2.2vw, 30px);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+
+  .small {
+    margin-top: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .problem {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

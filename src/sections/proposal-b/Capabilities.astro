@@ -1,0 +1,112 @@
+---
+/** Six of the capabilities, as Leedlime's feature cards. */
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+const items = [
+  { title: 'Individual tree detection', body: 'Species, trunk diameter, height and crown, from remote sensing.' },
+  { title: '3D forest reconstruction', body: 'Point clouds turned into navigable digital environments.' },
+  { title: 'Carbon stock estimation', body: 'Per-tree allometric models, with their uncertainty.' },
+  { title: 'Fire risk modeling', body: 'Fuel load, weather and topography, simulated together.' },
+  { title: 'Deforestation detection', body: 'Near real-time alerts from Sentinel-2 and radar.' },
+  { title: 'Automated reporting', body: 'CSRD, TCFD, EUDR, REDD+ and FSC reports from live data.' },
+];
+---
+
+<section class={`pb-section caps ${look === 'g1' ? 'caps-g' : ''}`} id="capabilities">
+  <h2 class="pb-h2 pb-center heading pb-reveal">Everything a forest needs to exist digitally.</h2>
+  <div class="grid">
+    {
+      items.map((it, i) => (
+        <article class="card pb-reveal" style={`--i: ${i % 3}`}>
+          <span class="icon" aria-hidden="true" />
+          <h3 class="pb-h3">{it.title}</h3>
+          <p class="pb-body">{it.body}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .heading {
+    max-width: 640px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: clamp(48px, 6vw, 72px);
+  }
+
+  .card {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 28px;
+    border-radius: var(--pb-radius);
+    background: var(--pb-card);
+    box-shadow:
+      0 0 0 1px var(--pb-card-line),
+      var(--pb-shadow-card);
+  }
+
+  /* Icon placeholder. */
+  .icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 14px;
+    border-radius: 11px;
+    background: var(--pb-placeholder);
+  }
+
+  /* Graphics version: each icon tile is a tiny grainy colour field (static CSS, no canvas). */
+  .caps-g .icon {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(80% 80% at 25% 25%, #86c8e8, transparent 70%),
+      radial-gradient(80% 80% at 80% 75%, #2e8a4b, transparent 70%),
+      #a2cc56;
+  }
+
+  .caps-g .card:nth-child(3n + 2) .icon {
+    background:
+      radial-gradient(80% 80% at 30% 70%, #c8aa4f, transparent 70%),
+      radial-gradient(80% 80% at 75% 25%, #86c8e8, transparent 70%),
+      #2e8a4b;
+  }
+
+  .caps-g .card:nth-child(3n) .icon {
+    background:
+      radial-gradient(80% 80% at 70% 30%, #a2cc56, transparent 70%),
+      radial-gradient(80% 80% at 25% 80%, #1f5e7a, transparent 70%),
+      #5d8f3a;
+  }
+
+  .caps-g .icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grain);
+    background-size: 120px;
+    mix-blend-mode: overlay;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

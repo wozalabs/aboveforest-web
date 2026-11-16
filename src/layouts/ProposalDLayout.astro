@@ -1,0 +1,65 @@
+---
+/** Layout for proposal D: the editorial grid of B with the dark greens of C, Manrope, a 3D opening. */
+import '@fontsource-variable/manrope/wght.css';
+import '../styles/proposal-d.css';
+import '../styles/reveal.css';
+import manrope from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import IterationTabs, { type Iteration } from '../components/IterationTabs.astro';
+import SmoothToggle from '../components/SmoothToggle.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  current?: Iteration;
+}
+const { title, description, current = 'd' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content={current === 'd' ? '#f2f3f5' : '#0d0e0f'} />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="preload" href={manrope} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Before first paint: hide the text that will be revealed, only if motion is welcome.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window)
+        document.documentElement.classList.add('rv-js');
+    </script>
+  </head>
+  <body class="pd">
+    <slot />
+    <IterationTabs current={current} />
+    <SmoothToggle />
+    <script>
+      import { mountReveal } from '../scripts/reveal';
+      import { mountSmooth } from '../scripts/smooth';
+      import { mountStack } from '../scripts/stack';
+      import { mountHeaderTheme } from '../scripts/proposal-d/header-theme';
+      import { mountHero3D } from '../scripts/proposal-d/hero3d';
+      import { mountExpand } from '../scripts/proposal-d/expand';
+      import { mountMorph } from '../scripts/proposal-d/morph';
+      import { mountHScroll } from '../scripts/proposal-d/hscroll';
+      import { mountTrees } from '../scripts/proposal-d/tree-spin';
+      import { mountHeroDark } from '../scripts/proposal-d/hero-dark';
+      const hero = document.querySelector<HTMLElement>('[data-hero3d]');
+      if (hero) mountHero3D(hero);
+      const dark = document.querySelector<HTMLElement>('[data-hero-dark]');
+      if (dark)
+        mountHeroDark(dark, () => import('../scripts/proposal-d/hero-field').then((m) => m.createField));
+      mountHScroll();
+      mountExpand();
+      mountMorph();
+      mountReveal();
+      mountStack();
+      mountHeaderTheme();
+      mountSmooth();
+      mountTrees();
+    </script>
+  </body>
+</html>

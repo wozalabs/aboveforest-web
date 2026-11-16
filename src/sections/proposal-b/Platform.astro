@@ -1,0 +1,159 @@
+---
+/**
+ * The platform: a wide image band (Leedlime's painting with the product on top), then the first
+ * module in detail and the rest by name.
+ */
+import Placeholder from './Placeholder.astro';
+import BrandField from './BrandField.astro';
+import TerritoryCard from './TerritoryCard.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+const others = ['Management Engine', 'Multi-Source Intelligence', 'Risk & Climate Modeling', 'Automated Compliance'];
+---
+
+<section class="pb-section platform" id="platform">
+  <div class="head pb-center">
+    <h2 class="pb-h2 pb-reveal">See your forest come alive.</h2>
+    <a class="pb-btn pb-reveal" style="--i: 1" href="#access">Request early access</a>
+  </div>
+
+  {
+    look === 'g1' ? (
+      <div class="band band-g pb-reveal" style="--i: 2">
+        <BrandField mode="field" palette="day" seed={2} class="band-bg" />
+        <div class="band-card">
+          <TerritoryCard />
+        </div>
+      </div>
+    ) : (
+      <div class="band pb-reveal" style="--i: 2">
+        <Placeholder class="band-bg" label="Landscape image" />
+        <Placeholder class="band-ui" label="Product interface" />
+      </div>
+    )
+  }
+
+  <div class="detail">
+    <div class="pb-reveal">
+      <h3 class="title">Live Territory</h3>
+      <p class="pb-lead text">
+        Your entire forest as a navigable digital twin. Every tree geolocated with species, height, diameter and health.
+        Built from fused satellite imagery, LiDAR and field data. Updated continuously, not once a decade.
+      </p>
+    </div>
+    <ul class="modules pb-reveal" style="--i: 1" aria-label="Also in the platform">
+      {others.map((m) => <li>{m}</li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    justify-items: center;
+    gap: 28px;
+    max-width: 720px;
+  }
+
+  /* The band bleeds to the frame rails, like Leedlime's. */
+  .band {
+    position: relative;
+    margin: clamp(48px, 6vw, 72px) calc(var(--pb-pad) * -1) 0;
+    aspect-ratio: 16 / 8;
+    min-height: 360px;
+  }
+
+  .band :global(.band-bg) {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+  }
+
+  /* The product sits on the landscape: a lighter card with its own shadow. */
+  .band :global(.band-ui) {
+    position: absolute;
+    left: 50%;
+    top: 12%;
+    width: min(78%, 900px);
+    height: 76%;
+    translate: -50% 0;
+    background: #f3f2ef;
+    box-shadow:
+      0 0 0 1px rgb(22 20 18 / 0.06),
+      0 24px 60px -20px rgb(22 20 18 / 0.25);
+  }
+
+  /* Graphics version: the field, and a light product card rising out of its bottom edge. */
+  .band-g {
+    aspect-ratio: auto;
+    min-height: 0;
+    padding-top: clamp(40px, 6vw, 80px);
+    display: grid;
+    justify-items: center;
+  }
+
+  .band-card {
+    position: relative;
+    width: min(78%, 760px);
+  }
+
+  .band-card :global(.paper) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 40px clamp(40px, 6vw, 96px);
+    margin-top: clamp(48px, 6vw, 72px);
+  }
+
+  .title {
+    font-size: clamp(26px, 2.4vw, 32px);
+    letter-spacing: -0.035em;
+    font-weight: 400;
+  }
+
+  .text {
+    max-width: 560px;
+    margin-top: 16px;
+  }
+
+  .modules {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .modules li {
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgb(22 20 18 / 0.035);
+    color: var(--text-secondary);
+    font-size: 16px;
+    letter-spacing: -0.015em;
+  }
+
+  @media (max-width: 900px) {
+    .detail {
+      grid-template-columns: 1fr;
+    }
+    .band {
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+    }
+    .band-g {
+      aspect-ratio: auto;
+    }
+    .band-card {
+      width: calc(100% - 32px);
+    }
+  }
+</style>

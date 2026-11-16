@@ -1,0 +1,320 @@
+/*
+ * Proposal C: deep forest greens, light streaks, photography, and one lime accent. Manrope throughout.
+ * No uppercase, no monospace, no positive tracking.
+ */
+.pc {
+  --font-serif: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-text: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --pc-ink: #eef2ea;
+  --pc-ink-2: rgb(238 242 234 / 0.66);
+  --pc-ink-3: rgb(238 242 234 / 0.46);
+  --pc-dark: #0d1b15;
+  --pc-dark-2: #13241c;
+  --pc-teal: #0c3428;
+  --pc-lime: #b8f27a;
+  --pc-lime-ink: #142a0c;
+  --pc-light: #f2f2ef;
+  --pc-light-ink: #111a14;
+  --pc-light-ink-2: rgb(17 26 20 / 0.62);
+  --pc-line: rgb(238 242 234 / 0.08);
+  --pc-max: 1200px;
+  --pc-pad: clamp(20px, 5vw, 64px);
+  --pc-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --pc-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+
+  /* The colour words flash as they resolve; light sections override it. */
+  --reveal: var(--pc-lime);
+
+  margin: 0;
+  background: var(--pc-dark);
+  color: var(--pc-ink);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pc *,
+.pc *::before,
+.pc *::after {
+  box-sizing: border-box;
+}
+
+.pc h1,
+.pc h2,
+.pc h3,
+.pc p,
+.pc ul,
+.pc figure {
+  margin: 0;
+}
+
+.pc img {
+  display: block;
+  max-width: 100%;
+}
+
+:where(.pc) a {
+  color: inherit;
+}
+
+.pc ::selection {
+  background: rgb(184 242 122 / 0.4);
+}
+
+.pc :focus-visible {
+  outline: 2px solid var(--pc-lime);
+  outline-offset: 2px;
+}
+
+.pc-wrap {
+  width: 100%;
+  max-width: calc(var(--pc-max) + var(--pc-pad) * 2);
+  margin-inline: auto;
+  padding-inline: var(--pc-pad);
+}
+
+/* Headlines: Manrope, light-ish and tight. */
+.pc-serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.pc-d1 {
+  font-size: clamp(48px, 6.4vw, 92px);
+  line-height: 0.98;
+}
+
+.pc-d2 {
+  font-size: clamp(38px, 4.4vw, 64px);
+  line-height: 1.02;
+}
+
+.pc-d3 {
+  font-size: clamp(30px, 3vw, 44px);
+  line-height: 1.06;
+}
+
+.pc-lead {
+  color: var(--pc-ink-2);
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.55;
+}
+
+.pc-small {
+  color: var(--pc-ink-2);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* Buttons: lime primary pill and a quiet dark one, like the reference. */
+.pc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(238 242 234 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(238 242 234 / 0.12);
+  color: var(--pc-ink);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms var(--pc-ease);
+}
+
+.pc-btn-lime {
+  background: var(--pc-lime);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
+  color: var(--pc-lime-ink);
+}
+
+.pc-btn-light {
+  background: #ffffff;
+  box-shadow: none;
+  color: var(--pc-light-ink);
+}
+
+.pc-on-light .pc-btn:not(.pc-btn-lime) {
+  background: rgb(17 26 20 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(17 26 20 / 0.1);
+  color: var(--pc-light-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pc-btn:hover {
+    background: rgb(238 242 234 / 0.16);
+  }
+  .pc-btn-lime:hover {
+    background: #c8f792;
+  }
+  .pc-btn-light:hover {
+    background: #f1f3ee;
+  }
+}
+
+.pc-btn:active {
+  transform: scale(0.97);
+}
+
+.pc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Small tags under cards. */
+.pc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.pc-tags li {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgb(238 242 234 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(238 242 234 / 0.12);
+  color: var(--pc-ink);
+  font-size: 12.5px;
+}
+
+/* Glass, for UI floating over photography and glow. */
+.pc-glass {
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.1));
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.18),
+    0 18px 40px -18px rgb(0 0 0 / 0.6);
+  color: var(--pc-ink);
+}
+
+.pc-paper {
+  border-radius: 14px;
+  background: #f4f4f1;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.05),
+    0 18px 40px -18px rgb(0 0 0 / 0.55);
+  color: var(--pc-light-ink);
+}
+
+/* Photography: covers its box, grain on top. */
+.pc-photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.pc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pc-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--pc-grain);
+  background-size: 180px;
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ── Stacked scrolling: a pinned section stays put while the next one slides over it. ── */
+.pc-section {
+  position: relative;
+  z-index: 1;
+}
+
+.pc-section[data-pin] {
+  position: sticky;
+  z-index: 0;
+  /* What shows around the sheet while it sinks back. */
+  background: #050a07;
+}
+
+.pin-inner {
+  position: relative;
+  min-height: inherit;
+  border-radius: inherit;
+  overflow: hidden;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+
+.pin-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #050a07;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The section that covers: rounded top edge and a long shadow, so it reads as a sheet on top. */
+.pc-cover {
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -30px 60px -20px rgb(0 0 0 / 0.55);
+}
+
+/* Light sheets: dark ink, and the reveal flashes a deeper green that reads on paper. */
+.pc-light {
+  --reveal: #3d8a1f;
+  background: var(--pc-light);
+  color: var(--pc-light-ink);
+}
+
+.pc-light .pc-lead,
+.pc-light .pc-small {
+  color: var(--pc-light-ink-2);
+}
+
+/* Section rhythm. */
+.pc-pad {
+  padding-block: clamp(96px, 13vw, 168px);
+}
+
+.pc-head {
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+}
+
+.pc-head-center {
+  margin-inline: auto;
+  justify-items: center;
+  text-align: center;
+}
+
+/* Scroll-linked fill: words light up as the paragraph passes. */
+.pc-fill .fw {
+  opacity: 0.22;
+  transition: opacity 240ms linear;
+}
+
+.pc-fill .fw[data-on] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-inner {
+    transform: none !important;
+  }
+}

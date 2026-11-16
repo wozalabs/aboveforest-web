@@ -1,0 +1,534 @@
+/*
+ * Proposal D: proposal B's editorial grid and proposal C's dark greens and photography, alternating
+ * dark and light sheets that stack as you scroll. Manrope throughout. A visible hairline column grid,
+ * no illustrations: type, photographs and interface only.
+ */
+.pd {
+  --font-sans: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --night: #0d0e0f;
+  --night-2: #16181a;
+  --on-night: #eef0ec;
+  --on-night-2: rgb(238 240 236 / 0.64);
+  --on-night-3: rgb(238 240 236 / 0.42);
+  --paper: #f2f3f1;
+  --paper-2: #e9ebe6;
+  --ink: #111a14;
+  --ink-2: rgb(17 26 20 / 0.62);
+  --ink-3: rgb(17 26 20 / 0.42);
+  --lime: #b8f27a;
+  --lime-ink: #142a0c;
+
+  --pd-max: 1280px;
+  --pd-pad: clamp(16px, 4vw, 48px);
+  --cell: clamp(16px, 1.8vw, 24px);
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+
+  margin: 0;
+  background: var(--night);
+  color: var(--on-night);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pd *,
+.pd *::before,
+.pd *::after {
+  box-sizing: border-box;
+}
+
+.pd h1,
+.pd h2,
+.pd h3,
+.pd p,
+.pd ol,
+.pd ul,
+.pd figure {
+  margin: 0;
+}
+
+.pd ol,
+.pd ul {
+  padding: 0;
+  list-style: none;
+}
+
+.pd img {
+  display: block;
+  max-width: 100%;
+}
+
+:where(.pd) a {
+  color: inherit;
+}
+
+.pd ::selection {
+  background: rgb(184 242 122 / 0.45);
+}
+
+.pd :focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+/* ── Themes: every sheet is dark or light. ── */
+.pd-dark {
+  --bg: var(--night);
+  --fg: var(--on-night);
+  --fg-2: var(--on-night-2);
+  --fg-3: var(--on-night-3);
+  --line: rgb(238 242 234 / 0.075);
+  --reveal: var(--lime);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.pd-light {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--ink-3);
+  --line: rgb(17 26 20 / 0.085);
+  --reveal: #3d8a1f;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ── Type ── */
+.pd-h1 {
+  font-size: clamp(44px, 6.6vw, 104px);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+}
+
+.pd-h2 {
+  font-size: clamp(36px, 4.4vw, 66px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.pd-h3 {
+  font-size: clamp(22px, 2vw, 30px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.pd-h4 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.pd-lead {
+  color: var(--fg-2);
+  font-size: clamp(17px, 1.3vw, 19px);
+  line-height: 1.5;
+}
+
+.pd-body {
+  color: var(--fg-2);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.pd-label {
+  color: var(--fg-3);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Grid: the content sits in a four-column grid, and the columns are drawn. ── */
+.pd-wrap {
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--pd-max) + var(--pd-pad) * 2);
+  margin-inline: auto;
+  padding-inline: var(--pd-pad);
+}
+
+.pd-pad {
+  padding-block: clamp(96px, 12vw, 160px);
+}
+
+.pd-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pd-cell {
+  padding-inline: var(--cell);
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+.span-3 {
+  grid-column: span 3;
+}
+.span-4 {
+  grid-column: 1 / -1;
+}
+.from-2 {
+  grid-column-start: 2;
+}
+.from-3 {
+  grid-column-start: 3;
+}
+.from-4 {
+  grid-column-start: 4;
+}
+
+/* The drawn columns: hairlines at the edges and between the four columns. */
+.pd-cols {
+  --edge: max(var(--pd-pad), calc((100% - var(--pd-max)) / 2));
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--edge);
+  right: var(--edge);
+  z-index: 0;
+  background: linear-gradient(to right, var(--line) 1px, transparent 1px) 0 0 / 25% 100%;
+  box-shadow: inset -1px 0 0 var(--line);
+  pointer-events: none;
+}
+
+/* A row that starts on a hairline. */
+.pd-rule {
+  box-shadow: 0 -1px 0 var(--line);
+}
+
+@media (max-width: 900px) {
+  .pd-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .span-3,
+  .span-2 {
+    grid-column: 1 / -1;
+  }
+  .from-2,
+  .from-3,
+  .from-4 {
+    grid-column-start: auto;
+  }
+  .pd-cols {
+    background-size: 50% 100%;
+  }
+}
+
+/* ── Buttons ── */
+.pd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg, #eef2ea) 8%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg, #eef2ea) 14%, transparent);
+  color: var(--fg, var(--on-night));
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms var(--ease);
+}
+
+.pd-btn-lime {
+  background: var(--lime);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45);
+  color: var(--lime-ink);
+}
+
+.pd-btn-solid {
+  background: var(--fg);
+  box-shadow: none;
+  color: var(--bg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pd-btn:hover {
+    background: color-mix(in srgb, var(--fg, #eef2ea) 14%, transparent);
+  }
+  .pd-btn-lime:hover {
+    background: #c8f792;
+  }
+  .pd-btn-solid:hover {
+    background: color-mix(in srgb, var(--fg) 86%, var(--bg));
+  }
+}
+
+.pd-btn:active {
+  transform: scale(0.97);
+}
+
+.pd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pd-chips li {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+  color: var(--fg-2);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+/* Glass, for interface over photographs. */
+.pd-glass {
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.1));
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.2),
+    0 18px 40px -18px rgb(0 0 0 / 0.55);
+  color: var(--on-night);
+}
+
+/* ── Photographs (the shared Photo component's classes) ── */
+.pd .pc-photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.pd .pc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd .pc-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 180px;
+  mix-blend-mode: overlay;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.pd-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  isolation: isolate;
+}
+
+/* ── Stacking: a pinned sheet stays while the next one slides over it. ── */
+.pd-section {
+  position: relative;
+  z-index: 1;
+}
+
+.pd-section[data-pin] {
+  position: sticky;
+  z-index: 0;
+  background: #050506;
+}
+
+.pin-inner {
+  position: relative;
+  min-height: inherit;
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--bg);
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+
+.pin-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #050506;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pd-cover {
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -30px 60px -20px rgb(0 0 0 / 0.5);
+}
+
+/* Keep content above the drawn columns. */
+.pin-inner > .pd-wrap,
+.pd-section > .pd-wrap {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-inner {
+    transform: none !important;
+  }
+}
+
+/* ── Colour morph: inside a morph zone, sections have no background of their own; the zone fades
+ * between dark and light as the section in the middle of the screen changes tone (see morph.ts). ── */
+@property --bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0d0e0f;
+}
+@property --fg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #eef2ea;
+}
+@property --fg-2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(238 242 234 / 0.64);
+}
+@property --fg-3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(238 242 234 / 0.42);
+}
+@property --line {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(238 242 234 / 0.075);
+}
+@property --reveal {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b8f27a;
+}
+
+.pd-morph {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    --bg 420ms ease-in-out,
+    --fg 320ms ease,
+    --fg-2 320ms ease,
+    --fg-3 320ms ease,
+    --line 320ms ease,
+    --reveal 320ms ease;
+}
+
+/* Ground tone and ink tone, set together by morph.ts. */
+.pd-morph[data-theme='dark'] {
+  --bg: var(--night);
+}
+
+.pd-morph[data-theme='light'] {
+  --bg: var(--paper);
+}
+
+.pd-morph[data-ink='dark'] {
+  --fg: var(--on-night);
+  --fg-2: var(--on-night-2);
+  --fg-3: var(--on-night-3);
+  --line: rgb(238 240 236 / 0.075);
+  --reveal: var(--lime);
+}
+
+.pd-morph[data-ink='light'] {
+  --fg: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--ink-3);
+  --line: rgb(17 26 20 / 0.085);
+  --reveal: #3d8a1f;
+}
+
+/* The wipe (see morph.ts): a one-screen window stuck to the viewport while the zone passes, behind
+ * the content; the gradient sheet inside slides across it. With the script, the ground switches when
+ * the wipe has covered the screen, so it does not fade on its own. */
+.pd-wipe {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  margin-bottom: -100vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pd-wipe div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.pd-morph[data-mode='wipe'] {
+  transition:
+    --fg 320ms ease,
+    --fg-2 320ms ease,
+    --fg-3 320ms ease,
+    --line 320ms ease,
+    --reveal 320ms ease;
+}
+
+/* One continuous column grid through the whole zone. */
+.pd-morph > .pd-cols {
+  position: absolute;
+}
+
+.pd-morph > section {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-morph {
+    transition-duration: 1ms;
+  }
+}
+
+/* ── Decorative tree (see tree-spin.ts) ── */
+.pd-tree {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.pd-tree[data-ready] {
+  opacity: 1;
+}
+
+.pd-tree canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Soft edges, so the ground and its shadow never end on the canvas's border. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to top, transparent, #000 14%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to top, transparent, #000 14%);
+  mask-composite: intersect;
+}

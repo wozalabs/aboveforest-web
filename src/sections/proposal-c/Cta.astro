@@ -1,0 +1,53 @@
+---
+/** Closing call to action on the sunlit pines. Slides over the light sheet, then stays for the footer. */
+import Photo from './Photo.astro';
+---
+
+<section class="pc-section pc-cover cta" id="access" data-pin>
+  <div class="pin-inner">
+    <Photo name="forest-light" position="50% 35%" />
+    <div class="shade" aria-hidden="true"></div>
+    <div class="pc-wrap body">
+      <h2 class="pc-serif pc-d1" data-reveal>Bring your forest online</h2>
+      <p class="pc-lead">Request early access to AboveForest and ForestLayer.</p>
+      <div class="pc-actions">
+        <a class="pc-btn pc-btn-lime" href="https://aboveforest.com">Request early access</a>
+        <a class="pc-btn" href="#platform">Explore the platform</a>
+      </div>
+    </div>
+  </div>
+  <div class="pin-shade"></div>
+</section>
+
+<style>
+  .cta {
+    min-height: max(100svh, 640px);
+  }
+
+  .pin-inner {
+    display: grid;
+    align-items: center;
+    background: var(--pc-dark);
+  }
+
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 60% at 50% 55%, rgb(8 20 14 / 0.55), transparent 80%),
+      linear-gradient(180deg, rgb(8 20 14 / 0.2), rgb(8 20 14 / 0.55));
+  }
+
+  .body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .body h2 {
+    max-width: 12ch;
+  }
+</style>

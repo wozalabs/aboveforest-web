@@ -1,0 +1,48 @@
+---
+/**
+ * Proposal B, assembled. `look` picks the version:
+ * - plain: grey placeholders for every image;
+ * - g1 ("graphics in"): the brand graphics fill the image slots;
+ * - g2 ("graphics on"): placeholders stay, and the graphics are added as extra brand moments.
+ */
+import ProposalLayout from '../../layouts/ProposalLayout.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import BrandBand from './BrandBand.astro';
+import Problem from './Problem.astro';
+import Platform from './Platform.astro';
+import Capabilities from './Capabilities.astro';
+import Shift from './Shift.astro';
+import ForestLayer from './ForestLayer.astro';
+import Stories from './Stories.astro';
+import Audiences from './Audiences.astro';
+import Cta from './Cta.astro';
+import Footer from './Footer.astro';
+import VersionSwitch from './VersionSwitch.astro';
+import type { Look } from './look';
+interface Props {
+  look: Look;
+}
+const { look } = Astro.props;
+---
+
+<ProposalLayout
+  title="AboveForest, the operating system for Earth's forests"
+  description="Forests become data. Data becomes infrastructure, enabling monitoring, MRV, and climate action at planetary scale."
+>
+  <Header />
+  <main id="main">
+    <Hero look={look} />
+    {look === 'g2' && <BrandBand />}
+    <Problem look={look} />
+    <Platform look={look} />
+    <Capabilities look={look} />
+    <Shift look={look} />
+    <ForestLayer look={look} />
+    <Stories look={look} />
+    <Audiences />
+    <Cta look={look} />
+  </main>
+  <Footer look={look} />
+  <VersionSwitch look={look} />
+</ProposalLayout>

@@ -1,0 +1,139 @@
+---
+/** ForestLayer between what comes in and what goes out, as the reference's integrations grid. */
+import Mark from './Mark.astro';
+const inputs = ['Satellite imagery', 'Sentinel-2', 'Radar', 'LiDAR', 'Field data'];
+const outputs = ['CSRD', 'TCFD', 'EUDR', 'REDD+', 'FSC'];
+---
+
+<section class="pc-section sources">
+  <div class="pc-wrap pc-pad">
+    <div class="pc-head pc-head-center">
+      <h2 class="pc-serif pc-d2" data-reveal>The language of forest intelligence</h2>
+      <p class="pc-lead">
+        AboveForest is built on ForestLayer, a clean, composable schema designed to track forest structure, carbon and
+        canopy over time, with geospatial precision and temporal traceability at its core.
+      </p>
+    </div>
+
+    <div class="flow">
+      <ul class="col" aria-label="Sources">{inputs.map((s, i) => <li style={`--o: ${2 - Math.abs(i - 2)}`}>{s}</li>)}</ul>
+      <div class="core">
+        <span class="core-mark"><Mark /></span>
+        <p class="core-name">ForestLayer</p>
+        <p class="core-claim">One object. One format. Infinitely scalable.</p>
+      </div>
+      <ul class="col" aria-label="Reports">{outputs.map((s, i) => <li style={`--o: ${2 - Math.abs(i - 2)}`}>{s}</li>)}</ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sources {
+    overflow: hidden;
+    background: var(--pc-dark);
+  }
+
+  .flow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr minmax(240px, 300px) 1fr;
+    align-items: center;
+    gap: clamp(20px, 4vw, 56px);
+    margin-top: clamp(56px, 7vw, 88px);
+  }
+
+  /* A soft lime streak runs through the middle, from sources to reports. */
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 160px;
+    margin-top: -80px;
+    background: radial-gradient(50% 50% at 50% 50%, rgb(184 242 122 / 0.14), transparent 70%);
+    pointer-events: none;
+  }
+
+  .col {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .col li {
+    display: flex;
+    align-items: center;
+    height: 52px;
+    padding: 0 18px;
+    border-radius: 14px;
+    background: var(--pc-dark-2);
+    color: var(--pc-ink-2);
+    font-size: 15px;
+  }
+
+  /* Tiles step towards the core, like the reference's staggered grid. */
+  .col:first-child li {
+    margin-left: calc(var(--o) * 18px);
+  }
+  .col:last-child li {
+    margin-right: calc(var(--o) * 18px);
+  }
+
+  .core {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 36px 24px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #1b3a2b, #10261c);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 30px 70px -30px rgb(184 242 122 / 0.35);
+    text-align: center;
+  }
+
+  .core-mark {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 6px;
+    border-radius: 16px;
+    background: var(--pc-lime);
+    color: var(--pc-lime-ink);
+  }
+
+  .core-mark :global(svg) {
+    width: 26px;
+  }
+
+  .core-name {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+  }
+
+  .core-claim {
+    max-width: 22ch;
+    color: var(--pc-ink-2);
+    font-size: 14px;
+  }
+
+  @media (max-width: 820px) {
+    .flow {
+      grid-template-columns: 1fr;
+    }
+    .col {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    .col li {
+      margin: 0 !important;
+      justify-content: center;
+    }
+  }
+</style>

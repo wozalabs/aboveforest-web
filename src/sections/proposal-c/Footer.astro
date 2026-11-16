@@ -1,0 +1,113 @@
+---
+/** Footer: link columns, then the wordmark set huge and fading into the ground. */
+import Logo from '../../components/Logo.astro';
+const year = new Date().getFullYear();
+const columns = [
+  { title: 'Product', links: [['Platform', '#platform'], ['Capabilities', '#capabilities'], ['Stories', '#stories'], ['For whom', '#for-whom']] },
+  { title: 'Company', links: [['Woza Labs', 'https://wozalabs.com'], ['ForestLayer', '#access'], ['Request access', '#access']] },
+  { title: 'Legal', links: [['Legal', '#'], ['Privacy', '#'], ['Support', '#']] },
+];
+---
+
+<footer class="pc-section pc-cover footer">
+  <div class="pc-wrap top">
+    <div class="brand">
+      <Logo class="logo" />
+      <p class="pc-small">Forest intelligence infrastructure.</p>
+    </div>
+    {
+      columns.map((c) => (
+        <nav class="col" aria-label={c.title}>
+          <p class="col-title">{c.title}</p>
+          {c.links.map(([label, href]) => (
+            <a href={href}>{label}</a>
+          ))}
+        </nav>
+      ))
+    }
+  </div>
+  <div class="pc-wrap">
+    <p class="legal">© {year} AboveForest and ForestLayer by Woza Labs.</p>
+  </div>
+  <p class="word pc-serif" aria-hidden="true">AboveForest</p>
+</footer>
+
+<style>
+  .footer {
+    overflow: hidden;
+    padding-top: clamp(72px, 9vw, 112px);
+    background: #08130e;
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+  }
+
+  .brand {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+  }
+
+  .brand :global(.logo) {
+    width: 150px;
+    height: auto;
+    color: var(--pc-ink);
+  }
+
+  .col {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    font-size: 14.5px;
+  }
+
+  .col-title {
+    margin-bottom: 4px;
+    color: var(--pc-ink-3);
+  }
+
+  .col a {
+    width: fit-content;
+    color: var(--pc-ink-2);
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .col a:hover {
+      color: var(--pc-ink);
+    }
+  }
+
+  .legal {
+    margin-top: 64px;
+    color: var(--pc-ink-3);
+    font-size: 13.5px;
+  }
+
+  /* The giant wordmark, cut by the bottom of the page and fading into it. */
+  .word {
+    margin: 24px 0 -0.24em;
+    background: linear-gradient(180deg, rgb(184 242 122 / 0.32), rgb(184 242 122 / 0) 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 19.5vw;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  @media (max-width: 760px) {
+    .top {
+      grid-template-columns: 1fr 1fr;
+    }
+    .brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

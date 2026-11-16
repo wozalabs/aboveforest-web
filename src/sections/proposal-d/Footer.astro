@@ -1,0 +1,111 @@
+---
+/** Footer on the grid: brand and three link columns, then the wordmark, cut by the bottom of the page. */
+import Logo from '../../components/Logo.astro';
+const year = new Date().getFullYear();
+const columns = [
+  { title: 'Product', links: [['Platform', '#platform'], ['ForestLayer', '#forestlayer'], ['Stories', '#stories'], ['For whom', '#for-whom']] },
+  { title: 'Company', links: [['Woza Labs', 'https://wozalabs.com'], ['Request access', '#access']] },
+  { title: 'Legal', links: [['Legal', '#'], ['Privacy', '#'], ['Support', '#']] },
+];
+---
+
+<footer class="pd-section pd-dark pd-cover footer" data-theme="dark">
+  <div class="pd-cols" aria-hidden="true"></div>
+  <div class="pd-wrap">
+    <div class="pd-grid top">
+      <div class="pd-cell brand">
+        <Logo class="logo" />
+        <p class="pd-body">Forest intelligence infrastructure.</p>
+      </div>
+      {
+        columns.map((c) => (
+          <nav class="pd-cell col" aria-label={c.title}>
+            <p class="pd-label">{c.title}</p>
+            {c.links.map(([label, href]) => (
+              <a href={href}>{label}</a>
+            ))}
+          </nav>
+        ))
+      }
+    </div>
+    <div class="pd-grid legal pd-rule">
+      <p class="pd-cell pd-label span-4">© {year} AboveForest and ForestLayer by Woza Labs.</p>
+    </div>
+  </div>
+  <p class="word" aria-hidden="true"><span>AboveForest</span></p>
+</footer>
+
+<style>
+  .footer {
+    overflow: hidden;
+    padding-top: clamp(72px, 9vw, 112px);
+    background: #0a0b0c;
+  }
+
+  .top {
+    row-gap: 40px;
+    padding-bottom: 64px;
+  }
+
+  .brand {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+  }
+
+  .brand :global(.logo) {
+    width: 150px;
+    height: auto;
+  }
+
+  .col {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .col .pd-label {
+    margin-bottom: 6px;
+  }
+
+  .col a {
+    width: fit-content;
+    color: var(--fg-2);
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .col a:hover {
+      color: var(--fg);
+    }
+  }
+
+  .legal {
+    padding-top: 20px;
+  }
+
+  /* The giant wordmark: centred on the page (a centred flex row overflows evenly on both sides),
+   * a shade lighter than the ground, cut by the bottom edge. A detail, not a headline. */
+  .word {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 -0.2em;
+    color: #17191b;
+    font-size: 16.6vw;
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .word span {
+    flex: none;
+    /* Negative tracking pulls the box in after the last letter, so the letters sit 0.03em right of
+     * the box's centre; nudge them back. */
+    transform: translateX(-0.03em);
+  }
+</style>

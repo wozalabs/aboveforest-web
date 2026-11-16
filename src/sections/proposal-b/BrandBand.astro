@@ -1,0 +1,72 @@
+---
+/**
+ * A horizon band (first reference): a long-exposure landscape split by a sharp green line, the
+ * name on it, and one line of the story. Only in the "graphics on top" version.
+ */
+import BrandField from './BrandField.astro';
+import ScanCard from './ScanCard.astro';
+---
+
+<section class="brand-band">
+  <BrandField mode="horizon" horizon={0.4} seed={21} class="band" label="Horizon">
+    <div class="corner">
+      <p class="name">AboveForest</p>
+      <p class="sub">Forest intelligence infrastructure.</p>
+    </div>
+    <p class="words">Forests become data.<br />Data becomes infrastructure.</p>
+    <ScanCard class="card" tint />
+  </BrandField>
+</section>
+
+<style>
+  .brand-band {
+    padding: clamp(16px, 2vw, 24px);
+    box-shadow: 0 1px 0 var(--pb-line);
+  }
+
+  .brand-band :global(.band) {
+    min-height: clamp(420px, 52vw, 640px);
+    color: #ffffff;
+  }
+
+  .corner {
+    position: absolute;
+    left: clamp(20px, 3vw, 36px);
+    top: clamp(20px, 3vw, 32px);
+  }
+
+  .name {
+    font-size: clamp(22px, 2.2vw, 30px);
+    letter-spacing: -0.035em;
+  }
+
+  .sub {
+    margin-top: 2px;
+    color: rgb(255 255 255 / 0.85);
+    font-size: 14px;
+  }
+
+  .words {
+    position: absolute;
+    left: clamp(20px, 3vw, 36px);
+    bottom: clamp(20px, 3vw, 36px);
+    font-size: clamp(30px, 3.8vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+  }
+
+  /* On the land, below the line, where it reads. */
+  .brand-band :global(.card) {
+    position: absolute;
+    right: clamp(20px, 3vw, 36px);
+    bottom: clamp(20px, 3vw, 36px);
+    width: min(340px, calc(100% - 40px));
+  }
+
+  /* On a phone the band keeps only the type. */
+  @media (max-width: 760px) {
+    .brand-band :global(.card) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,304 @@
+---
+/**
+ * Hero: wind-swept grass under a lime glow, the platform modules on a timeline that crosses the
+ * screen, and a floating card that follows the active module. Pinned: the next section slides over.
+ */
+import Photo from './Photo.astro';
+const modules = [
+  { name: 'Live Territory', sub: 'Your forest as a navigable digital twin' },
+  { name: 'Multi-Source Intelligence', sub: 'Satellite imagery, LiDAR and field data, fused' },
+  { name: 'Management Engine', sub: 'What-if for policy and management decisions' },
+  { name: 'Risk & Climate Modeling', sub: 'Fuel load, weather and topography' },
+  { name: 'Automated Compliance', sub: 'CSRD, TCFD, EUDR, REDD+ and FSC from live data' },
+];
+const base = `${import.meta.env.BASE_URL}proposal-c/`;
+---
+
+<section class="pc-section hero" id="top" data-pin>
+  <div class="pin-inner">
+    <Photo name="grass-wind" eager position="50% 55%" />
+    <div class="glow" aria-hidden="true"></div>
+
+    <div class="timeline" data-timeline style="--active: 0">
+      <div class="line" aria-hidden="true"><span class="line-fill"></span></div>
+      <div class="stops" role="group" aria-label="Platform modules">
+        {
+          modules.map((m, i) => (
+            <button type="button" class="stop" data-stop={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+              <span class="dot" aria-hidden="true" />
+              <span class="label">{m.name}</span>
+            </button>
+          ))
+        }
+      </div>
+      <div class="card pc-glass" aria-live="polite">
+        <img class="thumb" src={`${base}forest-light-1200.webp`} alt="" width="40" height="40" />
+        <div class="card-text" data-card>
+          <p class="card-title">{modules[0].name}</p>
+          <p class="card-sub">{modules[0].sub}</p>
+        </div>
+        <span class="state">Live</span>
+      </div>
+      <script type="application/json" data-modules set:html={JSON.stringify(modules)} />
+    </div>
+
+    <div class="pc-wrap bottom">
+      <h1 class="pc-serif pc-d1 title" data-reveal>The operating system for Earth's forests</h1>
+      <div class="side">
+        <p class="pc-lead">
+          Forests become data. Data becomes infrastructure, enabling monitoring, MRV, and climate action at planetary
+          scale.
+        </p>
+        <div class="pc-actions">
+          <a class="pc-btn pc-btn-lime" href="#access">Request early access</a>
+          <a class="pc-btn" href="#platform">Explore the platform</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pin-shade"></div>
+</section>
+
+<script>
+  // The active module advances on its own, slowly; hovering or focusing the timeline holds it.
+  const root = document.querySelector<HTMLElement>('[data-timeline]');
+  if (root) {
+    const modules: { name: string; sub: string }[] = JSON.parse(root.querySelector('[data-modules]')!.textContent!);
+    const stops = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-stop]'));
+    const card = root.querySelector<HTMLElement>('[data-card]')!;
+    const title = card.querySelector('.card-title')!;
+    const sub = card.querySelector('.card-sub')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let active = 0;
+    let held = false;
+    let swap = 0;
+
+    const go = (i: number) => {
+      active = (i + modules.length) % modules.length;
+      root.style.setProperty('--active', String(active));
+      stops.forEach((s, j) => s.setAttribute('aria-pressed', String(j === active)));
+      // Blur through the swap so the two texts never read as two objects.
+      card.setAttribute('data-swapping', '');
+      window.clearTimeout(swap);
+      swap = window.setTimeout(
+        () => {
+          title.textContent = modules[active].name;
+          sub.textContent = modules[active].sub;
+          card.removeAttribute('data-swapping');
+        },
+        reduce ? 0 : 160,
+      );
+    };
+
+    stops.forEach((s, i) => s.addEventListener('click', () => go(i)));
+    root.addEventListener('pointerenter', () => (held = true));
+    root.addEventListener('pointerleave', () => (held = false));
+    root.addEventListener('focusin', () => (held = true));
+    root.addEventListener('focusout', () => (held = false));
+    if (!reduce) {
+      window.setInterval(() => {
+        if (!held && !document.hidden) go(active + 1);
+      }, 4200);
+    }
+  }
+</script>
+
+<style>
+  .hero {
+    min-height: max(100svh, 720px);
+    background: var(--pc-dark);
+    overflow: hidden;
+  }
+
+  .pin-inner {
+    min-height: inherit;
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+
+  .hero :global(.pc-photo img) {
+    filter: saturate(1.05) brightness(0.8);
+  }
+
+  /* Darken towards the edges and the copy; a lime glow follows the grass. */
+  .glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 40% at 62% 48%, rgb(184 242 122 / 0.16), transparent 70%),
+      linear-gradient(180deg, rgb(8 20 14 / 0.85) 0%, rgb(8 20 14 / 0.15) 32%, rgb(8 20 14 / 0.1) 55%, rgb(8 20 14 / 0.9) 100%);
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    margin-top: 96px;
+    --n: 5;
+  }
+
+  .line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: rgb(238 242 234 / 0.22);
+  }
+
+  .line-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--pc-lime));
+    transform-origin: left;
+    transform: scaleX(calc((var(--active) + 0.5) / var(--n) * 0.8 + 0.1));
+    transition: transform 900ms var(--pc-ease);
+  }
+
+  .stops {
+    display: grid;
+    grid-template-columns: repeat(var(--n), 1fr);
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .stop {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    margin-top: -4px;
+    padding: 0 6px 8px;
+    border: 0;
+    background: none;
+    color: var(--pc-ink-3);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 200ms ease;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 4px rgb(238 242 234 / 0.06);
+  }
+
+  .stop[aria-pressed='true'] {
+    color: var(--pc-ink);
+  }
+
+  .stop[aria-pressed='true'] .dot {
+    background: var(--pc-lime);
+    box-shadow: 0 0 0 5px rgb(184 242 122 / 0.18);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .stop:hover {
+      color: var(--pc-ink-2);
+    }
+  }
+
+  /* The card sits above the active stop and glides between stops. */
+  .card {
+    position: absolute;
+    left: calc(10% + (var(--active) + 0.5) * 16%);
+    bottom: calc(100% + 18px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(340px, 80vw);
+    padding: 10px 12px 10px 10px;
+    transform: translateX(-50%);
+    transition: left 900ms var(--pc-ease);
+  }
+
+  .thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    object-fit: cover;
+  }
+
+  .card-text {
+    flex: 1;
+    min-width: 0;
+    transition:
+      opacity 160ms ease,
+      filter 160ms ease;
+  }
+
+  .card-text[data-swapping] {
+    opacity: 0;
+    filter: blur(4px);
+  }
+
+  .card-title {
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  .card-sub {
+    overflow: hidden;
+    color: var(--pc-ink-2);
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .state {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgb(238 242 234 / 0.14);
+    font-size: 12px;
+  }
+
+  /* ── Copy ── */
+  .bottom {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: end;
+    gap: 32px 64px;
+    padding-bottom: clamp(48px, 8vh, 88px);
+  }
+
+  .title {
+    max-width: 11ch;
+  }
+
+  .side {
+    display: grid;
+    gap: 22px;
+    max-width: 420px;
+    padding-bottom: 8px;
+  }
+
+  @media (max-width: 860px) {
+    .bottom {
+      grid-template-columns: 1fr;
+    }
+    .stops {
+      width: 100%;
+    }
+    .label {
+      display: none;
+    }
+    .card {
+      left: 50%;
+    }
+    .line-fill {
+      transform: scaleX(calc((var(--active) + 0.5) / var(--n)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .line-fill {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+/** ForestLayer, dark tone over the night clearing: what it reads, tracks and writes, as ruled rows of text. */
+import Photo from '../proposal-c/Photo.astro';
+const rows = [
+  { label: 'Reads', items: ['Satellite imagery', 'Sentinel-2', 'Radar', 'LiDAR', 'Field data'] },
+  { label: 'Tracks', items: ['Structure', 'Carbon', 'Canopy', 'Over time'] },
+  { label: 'Writes', items: ['CSRD', 'TCFD', 'EUDR', 'REDD+', 'FSC'] },
+];
+---
+
+<section class="layer" id="forestlayer" data-tone="dark" data-theme="dark">
+  <div class="photo" aria-hidden="true"><Photo name="forest-night" sizes="100vw" position="50% 60%" /></div>
+  <div class="pd-wrap pd-pad">
+      <div class="pd-grid head">
+        <h2 class="pd-h2 pd-cell span-2" data-reveal>The language of forest intelligence</h2>
+        <div class="pd-cell span-2 text">
+          <p class="pd-lead" data-reveal="lines">
+            AboveForest is built on ForestLayer, a clean, composable schema designed to track forest structure, carbon and
+            canopy over time, with geospatial precision and temporal traceability at its core.
+          </p>
+          <p class="claim" data-reveal>One object. One format. Infinitely scalable.</p>
+          <a class="pd-btn" href="#access">Explore ForestLayer</a>
+        </div>
+      </div>
+
+      <dl class="rows">
+        {
+          rows.map((r) => (
+            <div class="pd-grid row pd-rule">
+              <dt class="pd-cell pd-label">{r.label}</dt>
+              <dd class="pd-cell span-3 items">
+                {r.items.map((it) => (
+                  <span>{it}</span>
+                ))}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+  </div>
+</section>
+
+<style>
+  /* The clearing at night, kept low behind the type; it fades with the zone's tone. */
+  .photo {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+  }
+
+  :global([data-morph][data-ink='dark']) .photo {
+    opacity: 0.3;
+  }
+
+  .pd-wrap {
+    position: relative;
+  }
+
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--night) 0%, transparent 50%, var(--night) 100%);
+  }
+
+  .head {
+    row-gap: 28px;
+  }
+
+  .text {
+    display: grid;
+    justify-items: start;
+    gap: 24px;
+  }
+
+  .claim {
+    font-size: clamp(20px, 1.6vw, 24px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .rows {
+    margin: clamp(72px, 9vw, 120px) 0 0;
+  }
+
+  .row {
+    align-items: baseline;
+    padding-block: 22px;
+  }
+
+  .items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 28px;
+    margin: 0;
+    font-size: clamp(20px, 1.9vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+  }
+
+  .row:nth-child(2) .items {
+    color: var(--reveal);
+  }
+
+  @media (max-width: 900px) {
+    .row {
+      row-gap: 10px;
+    }
+  }
+</style>

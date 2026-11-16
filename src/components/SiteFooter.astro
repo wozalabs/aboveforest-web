@@ -1,0 +1,75 @@
+---
+import Logo from './Logo.astro';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" id="contact">
+  <div class="container inner">
+    <div class="brand">
+      <Logo class="logo" />
+      <p>AboveForest is a Woza Labs product.</p>
+    </div>
+    <nav class="links" aria-label="Footer">
+      <a href="#platform">Platform</a>
+      <a href="#platform">Data</a>
+      <a href="https://wozalabs.com">Woza Labs</a>
+      <a href="#contact">Privacy</a>
+    </nav>
+    <p class="legal">© {year} Woza Labs</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 56px 40px;
+    background: var(--bg);
+  }
+
+  .inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px 48px;
+    align-items: start;
+  }
+
+  .brand {
+    display: grid;
+    gap: 14px;
+    color: var(--text);
+  }
+
+  .brand :global(.logo) {
+    width: 150px;
+    height: auto;
+  }
+
+  .brand p,
+  .legal {
+    color: var(--text-tertiary);
+    font-size: 14px;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+  }
+
+  .links a {
+    color: var(--text-secondary);
+    font-size: 15px;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .links a:hover {
+      color: var(--text);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+/** The one dark band, like Leedlime's "Built for humans and agents". */
+import Placeholder from './Placeholder.astro';
+import BrandField from './BrandField.astro';
+import LayerCard from './LayerCard.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+---
+
+<section class={`pb-section layer ${look === 'g2' ? 'layer-g2' : ''}`}>
+  {look === 'g2' && <BrandField mode="field" palette="deep" seed={7} speed={0.8} class="layer-bg" />}
+  <div class="head pb-center">
+    <h2 class="pb-h2 pb-reveal">The language of forest intelligence.</h2>
+    <p class="text pb-reveal" style="--i: 1">
+      AboveForest is built on ForestLayer, a clean, composable schema designed to track forest structure, carbon and
+      canopy over time, with geospatial precision and temporal traceability at its core.
+    </p>
+    <p class="claim pb-reveal" style="--i: 2">One object. One format. Infinitely scalable.</p>
+    <a class="pb-btn pb-btn-light pb-reveal" style="--i: 3" href="#access">Explore ForestLayer</a>
+  </div>
+  <div class="panel pb-reveal" style="--i: 4">
+    {
+      look === 'g1' ? (
+        <BrandField mode="field" palette="deep" seed={7} class="panel-ph panel-g">
+          <LayerCard />
+        </BrandField>
+      ) : (
+        <Placeholder class="panel-ph" label="ForestLayer schema illustration" />
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .layer {
+    background: var(--pb-dark);
+    color: #f5f4f1;
+    box-shadow: none;
+  }
+
+  .panel :global(.panel-g) {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+
+  /* Graphics on top: the whole dark band is a slow, deep field; the content sits above it. */
+  .layer-g2 {
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .layer-g2 :global(.layer-bg) {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 0;
+  }
+
+  .head {
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+    max-width: 760px;
+  }
+
+  .text {
+    color: rgb(245 244 241 / 0.68);
+    font-size: clamp(16px, 1.3vw, 18px);
+    line-height: 1.6;
+  }
+
+  .claim {
+    margin-bottom: 8px;
+    color: oklch(0.855 0.172 128);
+    font-size: 15px;
+  }
+
+  .panel {
+    max-width: 1000px;
+    margin: clamp(48px, 6vw, 72px) auto 0;
+  }
+
+  .panel :global(.panel-ph) {
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+  }
+</style>

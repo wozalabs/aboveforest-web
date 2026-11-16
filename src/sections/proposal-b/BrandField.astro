@@ -1,0 +1,51 @@
+---
+/**
+ * A brand field: a slowly moving colour field (`field`) or long-exposure horizon (`horizon`) with
+ * grain. Drawn by scripts/brand-field.ts; the CSS gradient below is what shows before (and without)
+ * WebGL. Anything in the slot sits on top (glass cards, chips, type).
+ */
+interface Props {
+  mode?: 'field' | 'horizon';
+  palette?: 'day' | 'moss' | 'deep' | 'horizon' | 'dusk';
+  seed?: number;
+  /** Horizon height from the bottom, 0–1. */
+  horizon?: number;
+  /** Draw the sharp line on the horizon. */
+  line?: boolean;
+  speed?: number;
+  class?: string;
+  label?: string;
+}
+const {
+  mode = 'field',
+  palette = mode === 'horizon' ? 'horizon' : 'day',
+  seed = 1,
+  horizon = 0.5,
+  line = mode === 'horizon',
+  speed = 1,
+  class: className = '',
+  label,
+} = Astro.props;
+---
+
+<div
+  class={`bf bf-${palette} ${className}`}
+  data-brand-field
+  data-mode={mode}
+  data-palette={palette}
+  data-seed={seed}
+  data-horizon={horizon}
+  data-speed={speed}
+  style={`--hz: ${(1 - horizon) * 100}%`}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  {line && <span class="bf-line" aria-hidden="true" />}
+  <slot />
+</div>
+
+<script>
+  import { mountBrandFields } from '../../scripts/brand-field';
+  mountBrandFields();
+</script>

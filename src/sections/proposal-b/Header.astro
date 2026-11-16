@@ -1,0 +1,80 @@
+---
+import Logo from '../../components/Logo.astro';
+const links = [
+  { label: 'Platform', href: '#platform' },
+  { label: 'Capabilities', href: '#capabilities' },
+  { label: 'Stories', href: '#stories' },
+  { label: 'For whom', href: '#for-whom' },
+];
+---
+
+<header class="header">
+  <a class="brand" href="#top" aria-label="AboveForest, top of the page"><Logo class="logo" /></a>
+  <nav class="nav" aria-label="Main">
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+  </nav>
+  <a class="pb-btn pb-btn-sm cta" href="#access">Request early access</a>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 64px;
+    padding: 0 var(--pb-pad);
+    background: color-mix(in oklab, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 1px 0 var(--pb-line);
+  }
+
+  .brand {
+    color: var(--text);
+    justify-self: start;
+  }
+
+  .brand :global(.logo) {
+    width: 136px;
+    height: auto;
+  }
+
+  .nav {
+    display: flex;
+    gap: 6px;
+  }
+
+  .nav a {
+    padding: 8px 14px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    text-decoration: none;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav a:hover {
+      color: var(--text);
+      background: rgb(22 20 18 / 0.04);
+    }
+  }
+
+  .cta {
+    justify-self: end;
+  }
+
+  @media (max-width: 880px) {
+    .header {
+      grid-template-columns: 1fr auto;
+    }
+    .nav {
+      display: none;
+    }
+  }
+</style>

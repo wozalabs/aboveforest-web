@@ -1,0 +1,185 @@
+---
+/**
+ * The 3D opening: proposal A's forest seen from above the mist. Scrolling cranes the camera down to
+ * the edge of the forest while the first dark sheet slides over the stage (see hero3d.ts).
+ * Without WebGL, a photograph stands in.
+ */
+import Photo from '../proposal-c/Photo.astro';
+---
+
+<section class="hero" id="top" data-hero3d data-theme="light" aria-label="AboveForest">
+  <div class="stage" data-stage>
+    <div class="canvas" data-canvas-host></div>
+    <div class="fallback" aria-hidden="true"><Photo name="hill" eager position="50% 40%" /></div>
+    <div class="mist" aria-hidden="true"></div>
+    <div class="pd-cols" aria-hidden="true"></div>
+
+    <div class="pd-wrap copy" data-copy>
+      <div class="pd-grid">
+        <h1 class="pd-h1 pd-cell span-3 title" data-reveal>The operating system for Earth's forests</h1>
+        <div class="pd-cell side">
+          <p class="pd-lead" data-reveal="lines">
+            Forests become data. Data becomes infrastructure, enabling monitoring, MRV, and climate action at planetary
+            scale.
+          </p>
+          <div class="pd-actions">
+            <a class="pd-btn pd-btn-solid" href="#access">Request early access</a>
+            <a class="pd-btn" href="#platform">Explore the platform</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="caption" data-caption aria-hidden="true">Every tree, mapped from above</p>
+    <p class="hint" data-hint aria-hidden="true">Scroll into the forest</p>
+  </div>
+</section>
+
+<style>
+  /* Three screens of scroll; the next sheet covers the stage during the last one. */
+  .hero {
+    --bg: #f2f3f5;
+    --fg: var(--ink);
+    --fg-2: var(--ink-2);
+    --line: rgb(17 26 20 / 0.07);
+    --reveal: #3d8a1f;
+    position: relative;
+    height: 300svh;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .hero[data-theme='dark'] {
+    --fg: var(--on-night);
+    --fg-2: var(--on-night-2);
+    --line: rgb(238 242 234 / 0.08);
+    --reveal: var(--lime);
+  }
+
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .canvas,
+  .canvas :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .canvas :global(canvas) {
+    opacity: 0;
+    transition: opacity 900ms var(--ease);
+  }
+
+  .hero[data-ready] .canvas :global(canvas) {
+    opacity: 1;
+  }
+
+  .fallback {
+    display: none;
+  }
+
+  .hero[data-fallback] .fallback {
+    display: block;
+  }
+
+  .hero[data-fallback] .fallback::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgb(13 14 15 / 0.55);
+  }
+
+  /* Mist thickens behind the copy, so it reads over the forest from above. */
+  .mist {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 30%, transparent 62%),
+      linear-gradient(to bottom, color-mix(in srgb, var(--bg) 70%, transparent) 0%, transparent 22%);
+    transition: opacity 600ms ease;
+    pointer-events: none;
+  }
+
+  .hero[data-theme='dark'] .mist {
+    opacity: 0;
+  }
+
+  .pd-cols {
+    transition: background-color 600ms ease;
+  }
+
+  .copy {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(72px, 12svh, 128px);
+    z-index: 2;
+  }
+
+  .pd-grid {
+    align-items: end;
+    row-gap: 32px;
+  }
+
+  .title {
+    max-width: 12ch;
+  }
+
+  .side {
+    display: grid;
+    gap: 24px;
+    padding-bottom: 8px;
+  }
+
+  /* A line in the middle of the descent. */
+  .caption {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: rgb(242 243 245 / 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--ink);
+    white-space: nowrap;
+    font-size: clamp(22px, 2.4vw, 34px);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    text-align: center;
+    opacity: 0;
+    transform: translate(-50%, -40%);
+    transition:
+      opacity 600ms ease,
+      transform 900ms var(--ease);
+    pointer-events: none;
+  }
+
+  .caption[data-on] {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  .hint {
+    position: absolute;
+    right: calc(max(var(--pd-pad), (100% - var(--pd-max)) / 2) + var(--cell));
+    bottom: 68px;
+    z-index: 2;
+    color: var(--fg-2);
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .title {
+      max-width: 10ch;
+    }
+  }
+</style>

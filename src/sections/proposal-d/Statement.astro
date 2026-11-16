@@ -1,0 +1,89 @@
+---
+/**
+ * The problem and the answer, on the first dark sheet, which slides over the 3D stage. A beech turns
+ * slowly beside the answer.
+ */
+const gaps = ['No traceability.', 'No interoperability.', 'No ground truth.'];
+---
+
+<section class="pd-section pd-dark pd-cover statement" data-theme="dark">
+  <div class="pd-cols" aria-hidden="true"></div>
+  <div class="pd-wrap pd-pad">
+    <div class="pd-grid head">
+      <h2 class="pd-h2 pd-cell span-2" data-reveal>Forests are offline.</h2>
+      <p class="pd-lead pd-cell span-2" data-reveal="lines">
+        Most forests are still invisible to the systems meant to protect them. The most critical ecosystem on Earth is
+        still governed with field visits, static reports and outdated inventories.
+      </p>
+    </div>
+    <ol class="pd-grid gaps">
+      <li class="pd-cell pd-label">Today</li>
+      {
+        gaps.map((g) => (
+          <li class="pd-cell">
+            <p class="pd-h3" data-reveal>
+              {g}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="pd-grid answer pd-rule">
+      <div class="pd-cell span-2 answer-copy">
+        <h2 class="pd-h2" data-reveal>Forests don't need more monitoring. They need management.</h2>
+        <p class="pd-lead" data-reveal="lines">AboveForest is the operating system that makes it possible.</p>
+      </div>
+      <div class="pd-cell span-2 tree-cell">
+        <div class="pd-tree" data-tree="tree-haya" data-ground="dark" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .statement {
+    margin-top: -100svh;
+  }
+
+  .head {
+    row-gap: 24px;
+  }
+
+  .gaps {
+    margin-top: clamp(72px, 9vw, 128px);
+    padding-top: 24px;
+    box-shadow: 0 -1px 0 var(--line);
+  }
+
+  .answer {
+    align-items: end;
+    margin-top: clamp(96px, 12vw, 160px);
+  }
+
+  .answer-copy {
+    display: grid;
+    gap: 24px;
+    padding-top: 28px;
+    padding-bottom: 8px;
+  }
+
+  .answer-copy h2 {
+    max-width: 16ch;
+  }
+
+  .tree-cell {
+    height: clamp(320px, 34vw, 480px);
+  }
+
+  @media (max-width: 900px) {
+    .gaps {
+      row-gap: 20px;
+    }
+    .gaps .pd-label {
+      grid-column: 1 / -1;
+    }
+    .tree-cell {
+      height: 320px;
+    }
+  }
+</style>

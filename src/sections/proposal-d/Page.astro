@@ -1,0 +1,44 @@
+---
+/**
+ * Proposal D's page, shared by its variants; only the opening changes:
+ * forest = proposal A's scene from above the mist (the main one), field = the living point field.
+ */
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import HeroDark from './HeroDark.astro';
+import Statement from './Statement.astro';
+import Expand from './Expand.astro';
+import Platform from './Platform.astro';
+import ForestLayer from './ForestLayer.astro';
+import Stories from './Stories.astro';
+import Shift from './Shift.astro';
+import Audiences from './Audiences.astro';
+import Cta from './Cta.astro';
+import Footer from './Footer.astro';
+
+interface Props {
+  hero?: 'forest' | 'field';
+}
+const { hero = 'forest' } = Astro.props;
+---
+
+<Header />
+<main>
+  <!-- 3D stage, then the first sheet slides over it. -->
+  {hero === 'forest' ? <Hero /> : <HeroDark kind={hero} />}
+  <Statement />
+  <!-- The photograph opens from the grid to the full screen. -->
+  <Expand />
+  <!-- Light and dark sections that wipe into each other, with one horizontal moment. -->
+  <div class="pd-morph" data-morph data-theme="light" data-ink="light">
+    <div class="pd-cols" aria-hidden="true"></div>
+    <Platform />
+    <ForestLayer />
+    <Stories />
+    <Shift />
+    <Audiences />
+  </div>
+  <!-- The closing photograph holds while the footer covers it. -->
+  <Cta />
+</main>
+<Footer />

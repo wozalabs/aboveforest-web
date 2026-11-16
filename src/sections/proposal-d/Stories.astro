@@ -1,0 +1,155 @@
+---
+/**
+ * Stories as a horizontal track (light tone): the screen holds while the four stories slide sideways
+ * with the scroll (see hscroll.ts), then the page carries on down.
+ */
+import Photo from '../proposal-c/Photo.astro';
+const stories = [
+  {
+    photo: 'forest-light',
+    title: 'National forest inventory',
+    body: 'A ministry of environment replaces its decade-old field inventory with a continuously updated digital twin.',
+    tags: ['Tree detection', 'Carbon stock'],
+  },
+  {
+    photo: 'hill',
+    title: 'Carbon credit verification',
+    body: 'A climate fund validates emission reductions with tree-level biometrics and auditable, per-hectare MRV.',
+    tags: ['MRV', 'Change detection'],
+  },
+  {
+    photo: 'forest-night',
+    title: 'EUDR compliance',
+    body: 'A timber exporter proves every shipment deforestation-free, assembled automatically from live twin data.',
+    tags: ['Geolocation', 'Due diligence'],
+  },
+  {
+    photo: 'grass-wind',
+    title: 'Regional fire prevention',
+    body: 'A regional authority plans prevention where fuel load, weather and topography meet.',
+    tags: ['Fire risk', 'Scenarios'],
+  },
+] as const;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="stories" id="stories" data-tone="light" data-theme="light" data-hscroll>
+  <div class="screen">
+    <div class="pd-wrap">
+      <div class="pd-grid head">
+        <h2 class="pd-h2 pd-cell span-2" data-reveal>Where AboveForest changes the game</h2>
+        <p class="pd-cell pd-label from-4 count">{pad(stories.length)} stories</p>
+      </div>
+    </div>
+    <ol class="track" data-track role="list">
+      {
+        stories.map((s, i) => (
+          <li class="story">
+            <div class="pd-frame img">
+              <Photo name={s.photo} sizes="(max-width: 900px) 80vw, 560px" />
+            </div>
+            <div class="meta">
+              <span class="pd-label">{pad(i + 1)}</span>
+              <div class="text">
+                <h3 class="pd-h4">{s.title}</h3>
+                <p class="pd-body">{s.body}</p>
+                <ul class="pd-chips" aria-label="Topics">
+                  {s.tags.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .screen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: clamp(40px, 5vw, 64px);
+    padding-block: clamp(96px, 12vw, 160px);
+    overflow: hidden;
+  }
+
+  /* With the script: one screen that holds while the track slides. */
+  /* The heading and the cards sit as one block in the middle of the screen, with air above and below. */
+  .stories[data-live] .screen {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    gap: clamp(32px, 5svh, 56px);
+    padding-block: clamp(72px, 11svh, 120px);
+  }
+
+  .head {
+    align-items: end;
+  }
+
+  .count {
+    justify-self: end;
+  }
+
+  .track {
+    --edge: max(var(--pd-pad), calc((100% - var(--pd-max)) / 2));
+    display: flex;
+    gap: 0;
+    margin: 0;
+    padding: 0 var(--edge);
+    overflow-x: auto;
+    scrollbar-width: none;
+    will-change: transform;
+  }
+
+  .stories[data-live] .track {
+    overflow: visible;
+  }
+
+  .story {
+    flex: none;
+    display: grid;
+    align-content: start;
+    gap: 22px;
+    width: clamp(300px, 34vw, 500px);
+    padding-inline: var(--cell);
+  }
+
+  /* The image takes what the screen can spare, so the text never runs into the bottom edge. */
+  .img {
+    aspect-ratio: 16 / 10;
+    max-height: 38svh;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+  }
+
+  .text {
+    display: grid;
+    gap: 10px;
+  }
+
+  .text .pd-body {
+    max-width: 42ch;
+  }
+
+  .text .pd-chips {
+    margin-top: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .story {
+      width: 82vw;
+    }
+    .count {
+      display: none;
+    }
+  }
+</style>

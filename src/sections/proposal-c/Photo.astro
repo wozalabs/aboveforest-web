@@ -1,0 +1,28 @@
+---
+/** One of the forest photographs, responsive (1200 / 2400 px WebP), decorative. */
+type Name = 'forest-light' | 'grass-wind' | 'forest-night' | 'hill';
+interface Props {
+  name: Name;
+  class?: string;
+  eager?: boolean;
+  sizes?: string;
+  position?: string;
+}
+const { name, class: className = '', eager = false, sizes = '100vw', position = '50% 50%' } = Astro.props;
+const base = `${import.meta.env.BASE_URL}proposal-c/${name}`;
+---
+
+<div class={`pc-photo pc-grain ${className}`}>
+  <img
+    src={`${base}-1200.webp`}
+    srcset={`${base}-1200.webp 1200w, ${base}-2400.webp 2400w`}
+    sizes={sizes}
+    alt=""
+    width="2400"
+    height="1344"
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    fetchpriority={eager ? 'high' : undefined}
+    style={`object-position: ${position}`}
+  />
+</div>

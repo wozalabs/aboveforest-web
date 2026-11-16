@@ -1,0 +1,162 @@
+---
+/**
+ * Who it is for (three cards) and the frameworks it reports to (tiles), on the light sheet.
+ * Pinned: the closing photo slides over it.
+ */
+import Mark from './Mark.astro';
+const groups = [
+  {
+    title: 'National governments',
+    body: 'Ministries of environment, forestry agencies and land-use planning bodies that need sovereign control over forest intelligence.',
+  },
+  {
+    title: 'Regional authorities',
+    body: 'State, provincial and municipal governments managing fire risk, conservation and sustainable development across territories.',
+  },
+  {
+    title: 'International bodies',
+    body: 'UN agencies, development banks, climate funds and NGOs that need transparent, verifiable data to deploy capital and enforce commitments.',
+  },
+];
+const frameworks = ['EUDR', 'REDD+', 'CSRD', 'TCFD', 'FSC'];
+---
+
+<section class="pc-section pc-light pc-on-light govern" id="for-whom" data-pin>
+  <div class="pin-inner">
+    <div class="pc-wrap pc-pad">
+      <div class="pc-head pc-head-center">
+        <h2 class="pc-serif pc-d2" data-reveal>Built for those who govern forests</h2>
+      </div>
+
+      <div class="cols">
+        {
+          groups.map((g, i) => (
+            <article class="col">
+              <span class={`badge b${i}`} aria-hidden="true">
+                <Mark />
+              </span>
+              <h3 class="col-title">{g.title}</h3>
+              <p class="pc-small">{g.body}</p>
+              <a class="pc-btn" href="#access">
+                Talk to us
+              </a>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="frame">
+        <p class="frame-title">Reports ready for</p>
+        <ul class="tiles">{frameworks.map((f) => <li>{f}</li>)}</ul>
+      </div>
+    </div>
+  </div>
+  <div class="pin-shade"></div>
+</section>
+
+<style>
+  .pin-inner {
+    background: var(--pc-light);
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: clamp(48px, 6vw, 72px);
+  }
+
+  .col {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    justify-items: start;
+    gap: 12px;
+    padding: 28px;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgb(17 26 20 / 0.04);
+  }
+
+  .badge {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 18px;
+    border-radius: 13px;
+    background: var(--pc-teal);
+    color: var(--pc-lime);
+  }
+
+  .badge.b1 {
+    background: var(--pc-lime);
+    color: var(--pc-lime-ink);
+  }
+
+  .badge.b2 {
+    background: #dfe8da;
+    color: var(--pc-teal);
+  }
+
+  .badge :global(svg) {
+    width: 20px;
+  }
+
+  .col-title {
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .col .pc-btn {
+    margin-top: 12px;
+  }
+
+  .frame {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 24px;
+    margin-top: 16px;
+    padding: 20px 20px 20px 28px;
+    border-radius: 22px;
+    background: var(--pc-teal);
+    color: var(--pc-ink);
+  }
+
+  .frame-title {
+    color: var(--pc-ink-2);
+    font-size: 15px;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tiles li {
+    display: grid;
+    place-items: center;
+    height: 56px;
+    border-radius: 14px;
+    background: rgb(238 242 234 / 0.08);
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  @media (max-width: 900px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+    .frame {
+      grid-template-columns: 1fr;
+    }
+    .tiles {
+      grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    }
+  }
+</style>

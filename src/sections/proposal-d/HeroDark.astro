@@ -1,0 +1,294 @@
+---
+/**
+ * The dark 3D opening (the primary page), on #0D0E0F with the lime accent: tens of thousands of
+ * points rise into a forest seen from above, then resolve into a map of stands as you scroll
+ * (hero-field.ts); hover an area to see its trees. The first sheet slides over the stage during the
+ * last screen of scroll. The copy is real HTML; the canvas fades in when ready, and without WebGL the
+ * stage is simply black.
+ */
+import { STANDS } from '../../data/stands';
+interface Props {
+  kind: 'field';
+}
+const { kind } = Astro.props;
+const captions = {
+  field: ['Every tree, mapped from above', 'Hover an area to see its trees'],
+};
+const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+---
+
+<section class={`hero hero-${kind}`} id="top" data-hero-dark={kind} data-theme="dark" aria-label="AboveForest">
+  <div class="stage" data-stage>
+    <div class="canvas" data-canvas-host></div>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="pd-cols" aria-hidden="true"></div>
+
+    <div class="pd-wrap copy" data-copy>
+      <h1 class="title" data-reveal>The operating system for Earth's forests</h1>
+      <p class="pd-lead lead" data-reveal="lines">
+        Forests become data. Data becomes infrastructure, enabling monitoring, MRV, and climate action at planetary scale.
+      </p>
+      <div class="pd-actions actions">
+        <a class="pd-btn pd-btn-solid" href="#access">Request early access</a>
+        <a class="pd-btn" href="#platform">Explore the platform</a>
+      </div>
+    </div>
+
+    {
+      captions[kind].map((c, i) => (
+        <p class="caption" data-caption={i} aria-hidden="true">
+          {c}
+        </p>
+      ))
+    }
+    <p class="hint" data-hint aria-hidden="true">Scroll</p>
+
+    <!-- The stand under the pointer (hero-field.ts fills it and moves it). -->
+    <div class="zone-card" data-zone-card aria-hidden="true">
+      <p class="zone-id" data-f="id"></p>
+      <p class="zone-name" data-f="species"></p>
+      <p class="zone-latin" data-f="latin"></p>
+      <dl class="zone-data">
+        <div><dt>Type</dt><dd data-f="type"></dd></div>
+        <div><dt>Area</dt><dd data-f="area"></dd></div>
+        <div><dt>Trees</dt><dd data-f="trees"></dd></div>
+        <div><dt>Mean height</dt><dd data-f="height"></dd></div>
+        <div><dt>Carbon</dt><dd data-f="carbon"></dd></div>
+      </dl>
+    </div>
+
+    <!-- The same figures for screen readers and search engines. -->
+    <div class="visually-hidden">
+      <h2>Stands on the map</h2>
+      <ul>
+        {
+          STANDS.map((st) => (
+            <li>
+              {st.id}: {st.species} ({st.latin}), {st.type.toLowerCase()} {st.share}%, {fmt(st.area, 2)} ha,{' '}
+              {fmt(st.trees, 0)} trees, mean height {fmt(st.height)} m, {fmt(st.carbon, 0)} t CO₂e.
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Long enough to linger on the grid and its trees before the next sheet comes. */
+  .hero {
+    --bg: var(--night);
+    --fg: var(--on-night);
+    --fg-2: var(--on-night-2);
+    --line: rgb(238 240 236 / 0.06);
+    --reveal: var(--lime);
+    position: relative;
+    height: 280svh;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .canvas,
+  .canvas :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .canvas :global(canvas) {
+    opacity: 0;
+    transition: opacity 1200ms var(--ease);
+  }
+
+  .hero[data-ready] .canvas :global(canvas) {
+    opacity: 1;
+  }
+
+  /* Keep the copy legible over the points: a soft dark pool behind it. */
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(52% 40% at 50% 52%, rgb(13 14 15 / 0.92), rgb(13 14 15 / 0.7) 50%, rgb(13 14 15 / 0.25) 80%, transparent 100%),
+      linear-gradient(to top, rgb(13 14 15 / 0.65), transparent 30%);
+    opacity: var(--copy, 1);
+    pointer-events: none;
+  }
+
+  /* Centred and large: the headline in the middle of the screen, the rest beneath it. */
+  .copy {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: clamp(20px, 2.6vw, 32px);
+    padding-top: 40px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .copy > * {
+    pointer-events: auto;
+  }
+
+  .title {
+    max-width: 16ch;
+    font-size: clamp(40px, 5.2vw, 84px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 46ch;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .caption {
+    position: absolute;
+    left: 50%;
+    bottom: 56px;
+    z-index: 2;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: rgb(13 14 15 / 0.55);
+    box-shadow: inset 0 0 0 1px rgb(184 242 122 / 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--on-night);
+    font-size: clamp(16px, 1.4vw, 20px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    transition:
+      opacity 500ms ease,
+      transform 700ms var(--ease);
+    pointer-events: none;
+  }
+
+  .caption[data-on] {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .hint {
+    position: absolute;
+    right: calc(max(var(--pd-pad), (100% - var(--pd-max)) / 2) + var(--cell));
+    bottom: 68px;
+    z-index: 2;
+    color: var(--fg-2);
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  /* ── The stand card: follows the pointer over the map ── */
+  .zone-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    width: 236px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgb(13 14 15 / 0.86);
+    box-shadow:
+      inset 0 0 0 1px rgb(184 242 122 / 0.18),
+      0 20px 40px -20px rgb(0 0 0 / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--on-night);
+    opacity: 0;
+    transition: opacity 160ms ease;
+    pointer-events: none;
+  }
+
+  .zone-card[data-on] {
+    opacity: 1;
+  }
+
+  .zone-id {
+    color: var(--lime);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .zone-name {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .zone-latin {
+    margin-bottom: 10px;
+    color: var(--on-night-3);
+    font-size: 13px;
+  }
+
+  .zone-data {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-top: 10px;
+    box-shadow: 0 -1px 0 rgb(238 240 236 / 0.08);
+    font-size: 13px;
+  }
+
+  .zone-data div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .zone-data dt {
+    color: var(--on-night-2);
+  }
+
+  .zone-data dd {
+    margin: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The map takes the pointer once it is there. */
+  .hero[data-map] .stage {
+    cursor: crosshair;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px) {
+    .title {
+      max-width: 9ch;
+    }
+    .caption {
+      bottom: 72px;
+    }
+  }
+</style>

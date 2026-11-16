@@ -1,0 +1,54 @@
+---
+/** Layout for the design proposals that do not use the 3D scene (no forest header, no model preloads). */
+import '@fontsource-variable/manrope/wght.css';
+import '../styles/global.css';
+import '../styles/proposal-b.css';
+import manrope from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <!-- Design proposal: not for indexing. -->
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f9f8f6" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="preload" href={manrope} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Set before first paint so revealed content does not flash in and out.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window)
+        document.documentElement.classList.add('pb-js');
+    </script>
+  </head>
+  <body class="pb">
+    <div class="pb-frame">
+      <slot />
+    </div>
+    <script>
+      // Reveal on scroll, once per element. Skipped entirely with reduced motion.
+      if (document.documentElement.classList.contains('pb-js')) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              e.target.setAttribute('data-shown', '');
+              io.unobserve(e.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+        );
+        document.querySelectorAll('.pb-reveal').forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

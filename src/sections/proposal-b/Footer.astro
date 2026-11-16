@@ -1,0 +1,127 @@
+---
+import Logo from '../../components/Logo.astro';
+import Placeholder from './Placeholder.astro';
+import BrandField from './BrandField.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+const year = new Date().getFullYear();
+const columns = [
+  { title: 'Product', links: [['Platform', '#platform'], ['Capabilities', '#capabilities'], ['Stories', '#stories'], ['For whom', '#for-whom']] },
+  { title: 'Company', links: [['Woza Labs', 'https://wozalabs.com'], ['ForestLayer', '#access'], ['Request access', '#access']] },
+  { title: 'Legal', links: [['Legal', '#'], ['Privacy', '#'], ['Support', '#']] },
+];
+---
+
+<footer class="footer">
+  <div class="top">
+    <div class="brand">
+      <Logo class="logo" />
+      <p class="pb-body">Forest intelligence infrastructure.</p>
+    </div>
+    {
+      columns.map((c) => (
+        <nav class="col" aria-label={c.title}>
+          <p class="col-title">{c.title}</p>
+          {c.links.map(([label, href]) => (
+            <a href={href}>{label}</a>
+          ))}
+        </nav>
+      ))
+    }
+  </div>
+  <p class="legal">© {year} AboveForest and ForestLayer by Woza Labs.</p>
+  {
+    look === 'g1' ? (
+      <BrandField mode="horizon" horizon={0.55} seed={13} class="land" label="Horizon">
+        <span class="land-word">Forest intelligence infrastructure.</span>
+      </BrandField>
+    ) : (
+      <Placeholder class="land" label="Landscape image" />
+    )
+  }
+</footer>
+
+<style>
+  .footer {
+    padding-top: clamp(56px, 7vw, 88px);
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: 40px;
+    padding: 0 var(--pb-pad);
+  }
+
+  .brand {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    color: var(--text);
+  }
+
+  .brand :global(.logo) {
+    width: 150px;
+    height: auto;
+  }
+
+  .col {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .col-title {
+    margin-bottom: 4px;
+    color: var(--text-tertiary);
+    font-size: 13.5px;
+  }
+
+  .col a {
+    color: var(--text-secondary);
+    font-size: 15px;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .col a:hover {
+      color: var(--text);
+    }
+  }
+
+  .legal {
+    margin-top: clamp(48px, 6vw, 72px);
+    padding: 0 var(--pb-pad);
+    color: var(--text-tertiary);
+    font-size: 13.5px;
+  }
+
+  /* Leedlime ends on a painted landscape: the same strip, as a placeholder. */
+  .footer :global(.land) {
+    margin-top: 32px;
+    aspect-ratio: 1240 / 300;
+    border-radius: 0;
+  }
+
+  .land-word {
+    position: absolute;
+    left: var(--pb-pad);
+    bottom: clamp(18px, 3vw, 32px);
+    color: #ffffff;
+    font-size: clamp(22px, 2.6vw, 34px);
+    letter-spacing: -0.035em;
+  }
+
+  @media (max-width: 760px) {
+    .top {
+      grid-template-columns: 1fr 1fr;
+    }
+    .brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

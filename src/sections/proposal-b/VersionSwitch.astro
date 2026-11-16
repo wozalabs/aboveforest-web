@@ -1,0 +1,12 @@
+---
+/** Review tool, not part of the design: the shared iteration tabs, pointing at this version. */
+import IterationTabs from '../../components/IterationTabs.astro';
+import type { Look } from './look';
+interface Props {
+  look: Look;
+}
+const { look } = Astro.props;
+const current = ({ plain: 'b0', g1: 'b1', g2: 'b2' } as const)[look];
+---
+
+<IterationTabs current={current} />

@@ -1,0 +1,222 @@
+---
+/**
+ * Stories as a teal carousel of photo cards (scroll-snap, with previous and next buttons).
+ * Pinned: the quote slides over it.
+ */
+import Photo from './Photo.astro';
+const stories = [
+  {
+    photo: 'forest-light',
+    title: 'National forest inventory',
+    body: 'A ministry of environment replaces its decade-old field inventory with a continuously updated digital twin.',
+    tags: ['Tree detection', 'Species', 'Carbon stock'],
+  },
+  {
+    photo: 'hill',
+    title: 'Carbon credit verification',
+    body: 'A climate fund validates emission reductions with tree-level biometrics, replacing lookup tables with auditable MRV.',
+    tags: ['MRV', 'Change detection'],
+  },
+  {
+    photo: 'forest-night',
+    title: 'EUDR compliance',
+    body: 'A timber exporter proves every shipment deforestation-free, assembled automatically from live twin data.',
+    tags: ['Geolocation', 'Due diligence', 'Risk'],
+  },
+  {
+    photo: 'grass-wind',
+    title: 'Regional fire prevention',
+    body: 'A regional authority plans prevention where fuel load, weather and topography meet.',
+    tags: ['Fire risk', 'Scenarios'],
+  },
+] as const;
+---
+
+<section class="pc-section stories" id="stories" data-pin>
+  <div class="pin-inner">
+    <div class="pc-wrap pc-pad">
+      <div class="top">
+        <h2 class="pc-serif pc-d2" data-reveal>Where AboveForest changes the game</h2>
+        <div class="controls">
+          <button type="button" class="nav" data-dir="-1" aria-label="Previous story" aria-controls="story-track">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5l-5 5 5 5" /></svg>
+          </button>
+          <button type="button" class="nav" data-dir="1" aria-label="Next story" aria-controls="story-track">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 5l5 5-5 5" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <ul class="track" id="story-track" aria-label="Stories" tabindex="0">
+      {
+        stories.map((s) => (
+          <li class="story">
+            <div class="img">
+              <Photo name={s.photo} sizes="(max-width: 700px) 85vw, 520px" />
+              <ul class="pc-tags tags" aria-label="Topics">
+                {s.tags.map((t) => (
+                  <li class="pc-glass">{t}</li>
+                ))}
+              </ul>
+            </div>
+            <h3 class="story-title">{s.title}</h3>
+            <p class="pc-small">{s.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <div class="pin-shade"></div>
+</section>
+
+<script>
+  const track = document.getElementById('story-track');
+  if (track) {
+    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.stories .nav'));
+    const step = () => (track.firstElementChild as HTMLElement).offsetWidth + 16;
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      buttons[0].disabled = track.scrollLeft <= 2;
+      buttons[1].disabled = track.scrollLeft >= max;
+    };
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: 'smooth' })),
+    );
+    track.addEventListener('scroll', sync, { passive: true });
+    sync();
+  }
+</script>
+
+<style>
+  .stories {
+    min-height: 100svh;
+  }
+
+  .pin-inner {
+    display: grid;
+    align-content: center;
+    padding-bottom: clamp(72px, 10vw, 128px);
+    background:
+      radial-gradient(60% 50% at 80% 0%, rgb(184 242 122 / 0.1), transparent 70%),
+      var(--pc-teal);
+  }
+
+  .pc-pad {
+    padding-bottom: clamp(36px, 4vw, 56px);
+  }
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .top h2 {
+    max-width: 14ch;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(238 242 234 / 0.1);
+    color: var(--pc-ink);
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      opacity 160ms ease,
+      transform 160ms var(--pc-ease);
+  }
+
+  .nav svg {
+    width: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .nav:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav:hover:not(:disabled) {
+      background: rgb(238 242 234 / 0.18);
+    }
+  }
+
+  /* The track starts at the content edge and bleeds off the right of the screen. */
+  .track {
+    --edge: max(var(--pc-pad), calc((100vw - var(--pc-max)) / 2));
+    display: grid;
+    grid-auto-columns: min(520px, 82vw);
+    grid-auto-flow: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0 var(--edge);
+    overflow-x: auto;
+    scroll-padding-inline: var(--edge);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .story {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    scroll-snap-align: start;
+  }
+
+  .img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    margin-bottom: 12px;
+    border-radius: 20px;
+  }
+
+  .tags {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    right: 14px;
+  }
+
+  .tags li {
+    padding: 4px 10px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  }
+
+  .story-title {
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .story .pc-small {
+    max-width: 44ch;
+  }
+</style>

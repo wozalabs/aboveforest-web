@@ -1,0 +1,24 @@
+/*
+ * Text reveal (see src/scripts/reveal.ts). `rv-js` is set by an inline head script only when motion is
+ * welcome, so without it (reduced motion, no JS) the text is simply there.
+ */
+.rv-js [data-reveal] {
+  visibility: hidden;
+  /* If the script never arrives, show the text anyway. */
+  animation: rv-failsafe 0s 3s forwards;
+}
+
+@keyframes rv-failsafe {
+  to {
+    visibility: visible;
+  }
+}
+
+.rv-word {
+  transition: color 550ms ease;
+}
+
+.rv-word.rv-hot {
+  color: var(--reveal, #b8f27a);
+  transition: color 120ms ease;
+}

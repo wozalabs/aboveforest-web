@@ -1,0 +1,168 @@
+---
+/**
+ * The bridge from the problem to the platform: the forest from above starts as a frame in the middle
+ * two columns of the grid and grows until it fills the screen; then the photograph dims and the
+ * product rises onto it: the title centred on top and the AboveForest app below, whole, with room
+ * around it at any screen size. Scroll-scrubbed (see expand.ts); with reduced motion it is the
+ * dimmed photograph with the line and the app, still.
+ */
+const base = `${import.meta.env.BASE_URL}proposal-d/`;
+const set = (name: string) => ({
+  src: `${base}${name}-1200.webp`,
+  srcset: `${base}${name}-1200.webp 1200w, ${base}${name}-2400.webp 2400w`,
+});
+const canopy = set('canopy');
+const app = set('app-1');
+---
+
+<section class="pd-section pd-dark expand" id="platform" data-expand data-theme="dark">
+  <div class="sticky">
+    <div class="pd-cols" aria-hidden="true"></div>
+    <div class="frame" data-frame>
+      <div class="img">
+        <img class="photo" src={canopy.src} srcset={canopy.srcset} sizes="100vw" alt="" width="2400" height="1343" loading="eager" decoding="async" />
+      </div>
+      <div class="shade" aria-hidden="true"></div>
+    </div>
+
+    <div class="pd-wrap over" data-over>
+      <h2 class="pd-h2 head">See your forest come alive</h2>
+      <figure class="app">
+        <img
+          src={app.src}
+          srcset={app.srcset}
+          sizes="(max-width: 1376px) 92vw, 1240px"
+          alt="The AboveForest app: a forest map with a stand outlined in lime, the list of stands on the left and the stand's summary on the right."
+          width="2400"
+          height="1350"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .expand {
+    --line: rgb(238 240 236 / 0.075);
+    /* The air around the title and the app. */
+    --air: clamp(20px, 4svh, 48px);
+    height: 320svh;
+  }
+
+  .sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  /* The script sets the inset; without it (or with reduced motion) the photo is full screen. */
+  .frame {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    clip-path: inset(var(--t, 0px) var(--r, 0px) var(--b, 0px) var(--l, 0px) round var(--rad, 0px));
+    will-change: clip-path;
+  }
+
+  .img {
+    position: absolute;
+    inset: 0;
+    transform: scale(var(--zoom, 1));
+    transform-origin: 50% 50%;
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grain);
+    background-size: 180px;
+    mix-blend-mode: overlay;
+    opacity: 0.25;
+  }
+
+  /* The photograph dims as the product arrives. */
+  .shade {
+    position: absolute;
+    inset: 0;
+    background: rgb(13 14 15);
+    opacity: calc(0.15 + var(--over, 1) * 0.62);
+  }
+
+  /* ── The title and the app ── */
+  /* A column: the title centred on top at its own height, the app filling what is left below it,
+     always whole (it shrinks to fit the height or the width, whichever runs out first). */
+  .over {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 64px;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--air);
+    padding-top: var(--air);
+    padding-bottom: var(--air);
+    opacity: var(--over, 1);
+    transform: translateY(calc((1 - var(--over, 1)) * 40px));
+    pointer-events: none;
+  }
+
+  .head {
+    flex: none;
+    max-width: 18ch;
+    margin: 0 auto;
+    color: var(--on-night);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .app {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 0;
+    margin: 0;
+    padding-inline: var(--cell);
+  }
+
+  .app img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 1px rgb(238 240 236 / 0.08),
+      0 40px 90px -30px rgb(0 0 0 / 0.9),
+      0 0 80px -20px rgb(184 242 122 / 0.12);
+    transform: translateY(calc((1 - var(--over, 1)) * 60px)) scale(calc(0.96 + var(--over, 1) * 0.04));
+    transform-origin: 50% 100%;
+  }
+
+  /* On narrow screens the app is limited by the width, so it sits in the middle of the space left. */
+  @media (max-width: 900px) {
+    .app {
+      align-items: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .expand {
+      height: 100svh;
+    }
+  }
+</style>

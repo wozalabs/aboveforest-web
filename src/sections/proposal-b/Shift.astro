@@ -1,0 +1,126 @@
+---
+/** The shift, as Leedlime's "why" block: what changes, and what it replaces. */
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+const pairs = [
+  { now: 'One protocol. Total interoperability.', before: 'Siloed data in incompatible formats.' },
+  { now: 'Carbon from actual tree-level biometrics.', before: 'Carbon from lookup tables and estimates.' },
+  { now: 'Compliance as a byproduct of operations.', before: 'Compliance as paperwork theatre.' },
+  { now: 'Real-time deforestation alerts.', before: 'Illegal logging detected after the fact.' },
+];
+---
+
+<section class="pb-section shift">
+  <div class="top">
+    <h2 class="pb-h2 heading pb-reveal">The old way is over.</h2>
+    {
+      look === 'g2' && (
+        <div class="bars pb-reveal" style="--i: 1" aria-hidden="true">
+          <span class="bar b1" />
+          <span class="bar b2" />
+          <span class="bar b3" />
+        </div>
+      )
+    }
+  </div>
+  <div class="grid">
+    {
+      pairs.map((p, i) => (
+        <div class="item pb-reveal" style={`--i: ${i % 2}`}>
+          <p class="now">{p.now}</p>
+          <p class="pb-body before">
+            <span>Before</span> {p.before}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 32px clamp(40px, 6vw, 96px);
+  }
+
+  /* Horizon bars (first reference): stacked gradient strips resting on a green line, getting taller. */
+  .bars {
+    display: grid;
+    gap: 14px;
+  }
+
+  .bar {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-bottom: 3px solid #1f9a4c;
+    background:
+      linear-gradient(90deg, #2e8a4b 0%, rgb(46 138 75 / 0.5) 22%, transparent 34%) top / 100% 50% no-repeat,
+      linear-gradient(90deg, transparent 30%, #86c8e8 44%, #4aa6dc 52%, transparent 62%) top / 100% 50% no-repeat,
+      linear-gradient(90deg, #86c8e8 0%, transparent 18%, transparent 40%, #2e8a4b 48%, #40a05d 55%, transparent 64%) bottom / 100% 50% no-repeat,
+      #efefec;
+  }
+
+  .bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grain);
+    background-size: 140px;
+    mix-blend-mode: overlay;
+    opacity: 0.45;
+  }
+
+  .b1 {
+    height: 26px;
+  }
+
+  .b2 {
+    height: 44px;
+  }
+
+  .b3 {
+    height: 64px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(40px, 5vw, 64px) clamp(40px, 6vw, 96px);
+    margin-top: clamp(48px, 6vw, 72px);
+  }
+
+  .now {
+    font-size: clamp(22px, 2vw, 26px);
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+  }
+
+  .before {
+    margin-top: 10px;
+  }
+
+  .before span {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 1px 8px;
+    border-radius: 6px;
+    background: rgb(22 20 18 / 0.05);
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+
+  @media (max-width: 760px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

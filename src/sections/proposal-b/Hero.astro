@@ -1,0 +1,120 @@
+---
+import Placeholder from './Placeholder.astro';
+import BrandField from './BrandField.astro';
+import ScanCard from './ScanCard.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+---
+
+<section class="hero" id="top">
+  <div class="copy">
+    <h1 class="pb-display pb-reveal">The operating system for Earth's forests.</h1>
+    <p class="pb-lead lead pb-reveal" style="--i: 1">
+      Forests become data. Data becomes infrastructure, enabling monitoring, MRV, and climate action at planetary scale.
+    </p>
+    <div class="actions pb-reveal" style="--i: 2">
+      <a class="pb-btn" href="#access">Request early access</a>
+      <a class="pb-btn pb-btn-quiet" href="#platform">Explore the platform</a>
+    </div>
+    <ul class="notes pb-reveal" style="--i: 3">
+      <li>No commitment</li>
+      <li>Early access priority</li>
+    </ul>
+  </div>
+  {
+    look === 'g1' ? (
+      <BrandField mode="horizon" horizon={0.42} seed={3} class="art art-field" label="Horizon over the forest">
+        <ScanCard class="art-card" />
+      </BrandField>
+    ) : (
+      <Placeholder class="art" label="Hero image" />
+    )
+  }
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: min(820px, calc(100svh - 64px));
+    box-shadow: 0 1px 0 var(--pb-line);
+  }
+
+  .copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(56px, 7vw, 96px) var(--pb-pad);
+  }
+
+  h1 {
+    max-width: 11ch;
+  }
+
+  .lead {
+    max-width: 440px;
+    margin-top: 28px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  .notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+  }
+
+  .notes li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* A lime check, drawn in CSS. */
+  .notes li::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5.2 9.3l2.4 2.3 5.2-5.2' fill='none' stroke='%23305a12' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        center / 18px no-repeat,
+      color-mix(in oklch, var(--pb-lime) 55%, white);
+  }
+
+  /* The image runs to the frame edge, top to bottom, like Leedlime's painting. */
+  .hero :global(.art) {
+    border-radius: 0;
+    min-height: 100%;
+  }
+
+  .hero :global(.art-field) {
+    display: grid;
+    place-items: end center;
+    padding: clamp(24px, 4vw, 48px);
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .hero :global(.art) {
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+    }
+  }
+</style>

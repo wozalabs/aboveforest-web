@@ -1,0 +1,76 @@
+---
+/** Review tool: switch smooth scrolling on or off (see src/scripts/smooth.ts). Bottom right. */
+---
+
+<button class="smooth" type="button" role="switch" aria-checked="true" data-smooth-toggle>
+  <span class="track" aria-hidden="true"><span class="knob"></span></span>
+  Smooth scroll
+</button>
+
+<style>
+  .smooth {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    height: 36px;
+    padding: 0 14px 0 10px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(20 22 23 / 0.82);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.08),
+      0 10px 30px -12px rgb(0 0 0 / 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: rgb(238 240 236 / 0.86);
+    font-family: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .track {
+    position: relative;
+    width: 26px;
+    height: 16px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.14);
+    transition: background-color 200ms ease;
+  }
+
+  .knob {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #eef0ec;
+    transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .smooth[aria-checked='true'] .track {
+    background: #b8f27a;
+  }
+
+  .smooth[aria-checked='true'] .knob {
+    background: #142a0c;
+    transform: translateX(10px);
+  }
+
+  .smooth:focus-visible {
+    outline: 2px solid #b8f27a;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .smooth {
+      bottom: 12px;
+      right: 12px;
+    }
+  }
+</style>

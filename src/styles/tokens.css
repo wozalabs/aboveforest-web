@@ -1,0 +1,99 @@
+/*
+ * AboveForest tokens, taken from basodata_app (src/styles/globals.css): the same near-neutral scale
+ * (hue 265, chroma ≈ 0), the Basodata lime as the only accent, the relief buttons with grain, stacked
+ * shadows and concentric radii. Light is the page; dark is the forest (the `nocturno` values).
+ */
+:root {
+  color-scheme: light;
+
+  --font-sans: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  /* Light (basodata `claro`). --bg is also the mist colour of the 3D scene: they must stay equal. */
+  --bg: oklch(0.965 0.003 265);
+  --surface: oklch(0.995 0.001 265);
+  --surface-1: oklch(0.968 0.003 265);
+  --surface-2: oklch(0.948 0.004 265);
+  --surface-3: oklch(0.925 0.005 265);
+  --text: oklch(0.2 0.006 265);
+  --text-secondary: oklch(0.37 0.008 265);
+  --text-tertiary: oklch(0.45 0.008 265);
+  --tint: 0.25 0.01 265;
+  --accent: oklch(0.5 0.14 132);
+  --on-accent: oklch(0.99 0.01 128);
+  --marca: oklch(0.7 0.19 131);
+  --warn: oklch(0.53 0.12 70);
+  --focus: oklch(0.45 0.01 265 / 0.65);
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  --btn-primary-fill: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--accent) 84%, white) 0%,
+    var(--accent) 52%,
+    color-mix(in oklch, var(--accent) 88%, black) 100%
+  );
+  --btn-primary-fill-hover: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--accent) 76%, white) 0%,
+    color-mix(in oklch, var(--accent) 92%, white) 52%,
+    var(--accent) 100%
+  );
+  --btn-primary-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.3), inset 0 -1px 0 oklch(0.3 0.08 132 / 0.35), 0 0 0 1px oklch(0.42 0.12 132 / 0.55),
+    0 2px 6px -2px oklch(0.35 0.1 132 / 0.45);
+  --btn-fill: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.976 0.002 265) 100%);
+  --btn-fill-hover: linear-gradient(180deg, oklch(0.988 0.002 265) 0%, oklch(0.955 0.003 265) 100%);
+  --btn-shadow: inset 0 1px 0 oklch(1 0 0 / 0.9), 0 0 0 1px oklch(var(--tint) / 0.09), 0 1px 2px oklch(0.25 0.01 265 / 0.1);
+
+  --shadow-card: 0 1px 2px oklch(0.25 0.01 265 / 0.06), 0 6px 18px oklch(0.25 0.01 265 / 0.06);
+  --shadow-pop: 0 1px 2px oklch(0 0 0 / 0.35), 0 10px 24px oklch(0 0 0 / 0.32), 0 30px 64px oklch(0 0 0 / 0.28);
+
+  --radius-panel: 16px;
+  --radius-card: 14px;
+  --radius-tile: 10px;
+  --radius-btn: 10px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --gutter: clamp(20px, 4vw, 56px);
+  --max: 1240px;
+}
+
+/* Dark (basodata `nocturno`), for the forest. Applied to a subtree with data-theme="dark". */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: oklch(0.135 0.002 265);
+  --surface: oklch(0.163 0.003 265);
+  --surface-1: oklch(0.2 0.003 265);
+  --surface-2: oklch(0.238 0.004 265);
+  --surface-3: oklch(0.277 0.004 265);
+  --text: oklch(0.935 0.002 265);
+  --text-secondary: oklch(0.775 0.004 265);
+  --text-tertiary: oklch(0.665 0.005 265);
+  --tint: 1 0 0;
+  --accent: oklch(0.855 0.172 128);
+  --on-accent: oklch(0.19 0.02 128);
+  --marca: #a3e54b;
+  --warn: oklch(0.82 0.13 78);
+  --focus: oklch(0.75 0 0 / 0.55);
+
+  --btn-primary-fill: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--accent) 82%, white) 0%,
+    var(--accent) 42%,
+    color-mix(in oklch, var(--accent) 80%, oklch(0.5 0.16 128)) 100%
+  );
+  --btn-primary-fill-hover: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--accent) 74%, white) 0%,
+    color-mix(in oklch, var(--accent) 92%, white) 42%,
+    var(--accent) 100%
+  );
+  --btn-primary-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.55), inset 0 -1px 0 oklch(0.42 0.12 128 / 0.45), 0 0 0 1px oklch(0.6 0.15 128 / 0.55),
+    0 4px 14px -5px color-mix(in oklch, var(--accent) 60%, transparent);
+  --btn-fill: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  --btn-fill-hover: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+  --btn-shadow: inset 0 1px 0 oklch(1 0 0 / 0.07), 0 1px 2px oklch(0 0 0 / 0.35);
+}

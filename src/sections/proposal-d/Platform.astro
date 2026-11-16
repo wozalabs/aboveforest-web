@@ -1,0 +1,103 @@
+---
+/** The platform in words, then the capabilities as a ruled grid (light tone in the colour morph). */
+const modules = ['Multi-Source Intelligence', 'Management Engine', 'Risk & Climate Modeling', 'Automated Compliance'];
+const caps = [
+  { title: 'Individual tree detection', body: 'Species, trunk diameter, height and crown, from remote sensing.' },
+  { title: '3D forest reconstruction', body: 'Point clouds turned into navigable digital environments.' },
+  { title: 'Carbon stock estimation', body: 'Per-tree allometric models, with their uncertainty.' },
+  { title: 'Fire risk modeling', body: 'Fuel load, weather and topography, simulated together.' },
+  { title: 'Deforestation detection', body: 'Near real-time alerts from Sentinel-2 and radar.' },
+  { title: 'Automated reporting', body: 'CSRD, TCFD, EUDR, REDD+ and FSC reports from live data.' },
+];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="platform" data-tone="light" data-theme="light">
+  <div class="pd-wrap pd-pad">
+    <div class="pd-grid detail">
+      <h3 class="pd-h3 pd-cell" data-reveal>Live Territory</h3>
+      <p class="pd-lead pd-cell span-2" data-reveal="lines">
+        Your entire forest as a navigable digital twin. Every tree geolocated with species, height, diameter and health.
+        Built from fused satellite imagery, LiDAR and field data. Updated continuously, not once a decade.
+      </p>
+      <ul class="pd-cell modules" aria-label="Also in the platform">
+        {modules.map((m) => <li>{m}</li>)}
+      </ul>
+    </div>
+
+    <div class="pd-grid caps" id="capabilities">
+      <h2 class="pd-h2 pd-cell span-2 caps-title" data-reveal>Everything a forest needs to exist digitally</h2>
+      <ol class="list" role="list" aria-label="Capabilities">
+        {
+          caps.map((c, i) => (
+            <li class="pd-cell cap">
+              <span class="pd-label">{pad(i + 1)}</span>
+              <h3 class="pd-h4">{c.title}</h3>
+              <p class="pd-body">{c.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .detail {
+    padding-top: 28px;
+    row-gap: 20px;
+  }
+
+  .modules {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    color: var(--fg-2);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  /* ── Capabilities: the heading takes two columns of the first row, the cards fill the rest. ── */
+  .caps {
+    margin-top: clamp(96px, 12vw, 160px);
+  }
+
+  .caps-title {
+    max-width: 14ch;
+    padding-bottom: 40px;
+  }
+
+  .list {
+    display: contents;
+  }
+
+  .cap {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-height: 220px;
+    padding-top: 22px;
+    padding-bottom: 40px;
+    box-shadow: 0 -1px 0 var(--line);
+    transition: background-color 200ms ease;
+  }
+
+  .cap .pd-label {
+    margin-bottom: 28px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cap:hover {
+      background: color-mix(in srgb, var(--fg) 4%, transparent);
+    }
+    .cap:hover .pd-label {
+      color: var(--reveal);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cap {
+      min-height: 0;
+    }
+  }
+</style>

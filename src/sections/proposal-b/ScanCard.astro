@@ -1,0 +1,98 @@
+---
+/** Glass card: the territory being read. Neutral UI, no figures. */
+interface Props {
+  class?: string;
+  /** Darker glass, for bright fields. */
+  tint?: boolean;
+}
+const { class: className = '', tint = false } = Astro.props;
+---
+
+<div class={`glass scan ${tint ? 'glass-tint' : ''} ${className}`}>
+  <div class="row">
+    <span class="pulse" aria-hidden="true"></span>
+    <span class="title">Scanning territory</span>
+    <span class="state">Live</span>
+  </div>
+  <div class="track" aria-hidden="true"><span class="fill"></span></div>
+  <div class="layers" aria-hidden="true">
+    <span>Canopy</span><span>Species</span><span>Carbon</span>
+  </div>
+</div>
+
+<style>
+  .scan {
+    display: grid;
+    gap: 16px;
+    width: min(420px, 100%);
+    padding: 18px 20px 20px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    letter-spacing: -0.015em;
+  }
+
+  .title {
+    flex: 1;
+  }
+
+  .state {
+    color: rgb(255 255 255 / 0.75);
+    font-size: 14px;
+  }
+
+  .track {
+    position: relative;
+    height: 2px;
+    border-radius: 2px;
+    background: rgb(255 255 255 / 0.35);
+    overflow: hidden;
+  }
+
+  /* Constant motion: linear. */
+  .fill {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    transform-origin: left;
+    animation: scan-fill 9s linear infinite;
+  }
+
+  @keyframes scan-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .layers {
+    display: flex;
+    gap: 6px;
+  }
+
+  .layers span {
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.16);
+    color: rgb(255 255 255 / 0.9);
+    font-size: 12.5px;
+  }
+
+  .layers span:first-child {
+    background: rgb(255 255 255 / 0.9);
+    color: #1d3a26;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fill {
+      animation: none;
+      transform: scaleX(0.6);
+    }
+  }
+</style>

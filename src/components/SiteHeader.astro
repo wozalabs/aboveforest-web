@@ -1,0 +1,126 @@
+---
+import Logo from './Logo.astro';
+const base = import.meta.env.BASE_URL;
+const links = [
+  { label: 'Platform', href: '#platform' },
+  { label: 'Solutions', href: '#platform' },
+  { label: 'Data', href: '#platform' },
+  { label: 'Company', href: '#contact' },
+];
+---
+
+<header class="header" data-header>
+  <div class="inner">
+    <a class="brand" href={base} aria-label="AboveForest, home">
+      <Logo class="logo" />
+    </a>
+    <nav class="nav" aria-label="Main">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <div class="actions">
+      <a class="btn btn-ghost btn-sm signin" href="#contact">Sign in</a>
+      <a class="btn btn-primary btn-sm" href="#contact">Request a demo</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Solid header once the page leaves the forest (over the 2D sections the content scrolls beneath it).
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const forest = document.querySelector<HTMLElement>('[data-forest]');
+  const update = () => {
+    // As soon as the pinned stage starts to scroll away, content passes under the header.
+    const past = forest ? forest.getBoundingClientRect().bottom < window.innerHeight - 1 : window.scrollY > 8;
+    header.toggleAttribute('data-solid', past);
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+</script>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--text);
+    transition: background-color 240ms ease;
+  }
+
+  /* Over the forest the header takes the scene's theme. */
+  :global(html[data-scene-theme='dark']) .header:not([data-solid]) {
+    --text: oklch(0.935 0.002 265);
+    --text-secondary: oklch(0.775 0.004 265);
+    --tint: 1 0 0;
+    --accent: oklch(0.855 0.172 128);
+    --on-accent: oklch(0.19 0.02 128);
+    --btn-primary-fill: linear-gradient(180deg, oklch(0.9 0.13 128) 0%, oklch(0.855 0.172 128) 42%, oklch(0.78 0.17 128) 100%);
+    --btn-primary-fill-hover: linear-gradient(180deg, oklch(0.92 0.11 128) 0%, oklch(0.88 0.15 128) 42%, oklch(0.855 0.172 128) 100%);
+    --btn-primary-shadow: inset 0 1px 0 oklch(1 0 0 / 0.55), inset 0 -1px 0 oklch(0.42 0.12 128 / 0.45), 0 0 0 1px oklch(0.6 0.15 128 / 0.55);
+  }
+
+  .header[data-solid] {
+    background: color-mix(in oklab, var(--bg) 84%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 72px;
+    padding-inline: var(--gutter);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    color: var(--text);
+    transition: color 400ms ease;
+  }
+
+  .brand :global(.logo) {
+    width: 148px;
+    height: auto;
+  }
+
+  .nav {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+  }
+
+  .nav a {
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    text-decoration: none;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav a:hover {
+      color: var(--text);
+      background: oklch(var(--tint) / 0.06);
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  @media (max-width: 860px) {
+    .nav,
+    .signin {
+      display: none;
+    }
+    .brand :global(.logo) {
+      width: 128px;
+    }
+  }
+</style>

@@ -1,0 +1,85 @@
+---
+/** Who it is for, laid out like Leedlime's pricing: three columns between hairlines. */
+const groups = [
+  {
+    title: 'National governments',
+    body: 'Ministries of environment, forestry agencies and land-use planning bodies that need sovereign control over forest intelligence.',
+  },
+  {
+    title: 'Regional authorities',
+    body: 'State, provincial and municipal governments managing fire risk, conservation and sustainable development across territories.',
+  },
+  {
+    title: 'International bodies',
+    body: 'UN agencies, development banks, climate funds and NGOs that need transparent, verifiable data to deploy capital and enforce commitments.',
+  },
+];
+---
+
+<section class="audiences" id="for-whom">
+  <div class="head pb-center">
+    <h2 class="pb-h2 pb-reveal">Built for those who govern forests.</h2>
+  </div>
+  <div class="cols">
+    {
+      groups.map((g, i) => (
+        <article class="col pb-reveal" style={`--i: ${i}`}>
+          <h3 class="title">{g.title}</h3>
+          <p class="pb-body">{g.body}</p>
+          <a class="pb-btn pb-btn-quiet pb-btn-sm" href="#access">
+            Talk to us
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .audiences {
+    box-shadow: 0 1px 0 var(--pb-line);
+  }
+
+  .head {
+    max-width: 640px;
+    padding: clamp(64px, 9vw, 112px) var(--pb-pad) clamp(40px, 5vw, 64px);
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    box-shadow: 0 -1px 0 var(--pb-line);
+  }
+
+  .col {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 14px;
+    padding: 40px var(--pb-pad) 48px;
+  }
+
+  .col + .col {
+    box-shadow: -1px 0 0 var(--pb-line);
+  }
+
+  .title {
+    font-size: clamp(24px, 2.2vw, 30px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+    font-weight: 400;
+  }
+
+  .col .pb-btn {
+    justify-self: start;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+    .col + .col {
+      box-shadow: 0 -1px 0 var(--pb-line);
+    }
+  }
+</style>

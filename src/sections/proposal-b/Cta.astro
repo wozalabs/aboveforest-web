@@ -1,0 +1,121 @@
+---
+/** Closing call to action, centred, then the footer sits on a landscape strip. */
+import BrandField from './BrandField.astro';
+import ScanCard from './ScanCard.astro';
+import type { Look } from './look';
+interface Props {
+  look?: Look;
+}
+const { look = 'plain' } = Astro.props;
+---
+
+{
+  look === 'g2' ? (
+    <section class="pb-section cta-g" id="access">
+      <div class="duo pb-reveal">
+        <div class="duo-copy">
+          <h2 class="pb-h2">Ready to bring your forests online?</h2>
+          <div>
+            <p class="pb-lead">
+              AboveForest is in early deployment with select government partners. Access is limited, and allocated first
+              come, first served.
+            </p>
+            <a class="pb-btn duo-btn" href="#access">
+              Request early access
+            </a>
+          </div>
+        </div>
+        <BrandField mode="field" palette="day" seed={9} class="duo-field">
+          <ScanCard tint />
+        </BrandField>
+      </div>
+    </section>
+  ) : (
+    <section class="pb-section cta" id="access">
+      <h2 class="pb-h2 pb-reveal">Ready to bring your forests online?</h2>
+      <p class="pb-lead text pb-reveal" style="--i: 1">
+        AboveForest is in early deployment with select government partners. Access is limited, and allocated first come,
+        first served.
+      </p>
+      <a class="pb-btn pb-reveal" style="--i: 2" href="#access">
+        Request early access
+      </a>
+    </section>
+  )
+}
+
+<style>
+  .cta {
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+    text-align: center;
+    padding-block: clamp(88px, 12vw, 152px);
+  }
+
+  .pb-h2 {
+    max-width: 14ch;
+  }
+
+  .text {
+    max-width: 520px;
+    margin-bottom: 14px;
+  }
+
+  /* Graphics on top (second reference): a cream panel melting into a living field. */
+  .duo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    min-height: 460px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fcfaf6;
+    box-shadow:
+      0 0 0 1px var(--pb-card-line),
+      var(--pb-shadow-card);
+  }
+
+  .duo-copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    align-content: space-between;
+    gap: 40px;
+    padding: clamp(28px, 4vw, 48px);
+  }
+
+  .duo-copy .pb-h2 {
+    max-width: 12ch;
+  }
+
+  .duo-copy .pb-lead {
+    max-width: 420px;
+  }
+
+  .duo-btn {
+    margin-top: 24px;
+  }
+
+  .duo :global(.duo-field) {
+    display: grid;
+    place-items: center;
+    padding: 32px 32px 32px calc(32px + 18%);
+    margin-left: -18%;
+    border-radius: 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+  }
+
+  @media (max-width: 860px) {
+    .duo {
+      grid-template-columns: 1fr;
+    }
+    .duo :global(.duo-field) {
+      min-height: 300px;
+      margin-left: 0;
+      padding-left: 32px;
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%);
+      mask-image: linear-gradient(180deg, transparent 0%, #000 22%);
+    }
+  }
+</style>

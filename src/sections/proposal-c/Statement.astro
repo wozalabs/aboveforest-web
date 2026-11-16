@@ -1,0 +1,132 @@
+---
+/**
+ * The problem, as one statement that lights up word by word while three photo tiles float past.
+ * Slides over the pinned hero.
+ */
+import Photo from './Photo.astro';
+const tiles = [
+  { name: 'forest-light', label: 'Structure', cls: 't1', drift: 0.22 },
+  { name: 'hill', label: 'Carbon', cls: 't2', drift: 0.12 },
+  { name: 'forest-night', label: 'Canopy', cls: 't3', drift: 0.3 },
+] as const;
+---
+
+<section class="pc-section pc-cover statement">
+  <div class="glow" aria-hidden="true"></div>
+  {
+    tiles.map((t) => (
+      <div class={`tile ${t.cls}`} data-drift={t.drift} aria-hidden="true">
+        <div class="tile-img">
+          <Photo name={t.name} sizes="240px" />
+        </div>
+        <span class="tile-label pc-glass">{t.label}</span>
+      </div>
+    ))
+  }
+  <div class="pc-wrap pc-pad body">
+    <h2 class="pc-serif pc-d2" data-reveal>Forests are offline</h2>
+    <p class="pc-serif statement-text" data-fill>
+      Most forests are still invisible to the systems meant to protect them. The most critical ecosystem on Earth is
+      still governed with field visits, static reports and outdated inventories.
+    </p>
+    <ul class="pc-tags absent" aria-label="What is missing">
+      <li>No traceability</li>
+      <li>No interoperability</li>
+      <li>No ground truth</li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .statement {
+    overflow: hidden;
+    background: var(--pc-teal);
+  }
+
+  .glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(50% 45% at 50% 0%, rgb(184 242 122 / 0.12), transparent 70%),
+      radial-gradient(70% 60% at 50% 110%, rgb(5 14 10 / 0.7), transparent 70%);
+  }
+
+  .body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 36px;
+    text-align: center;
+  }
+
+  .statement-text {
+    max-width: 21ch;
+    font-size: clamp(30px, 3.6vw, 52px);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  .absent li {
+    background: rgb(5 14 10 / 0.3);
+  }
+
+  /* ── Floating tiles ── */
+  .tile {
+    position: absolute;
+    z-index: 0;
+    width: clamp(120px, 15vw, 210px);
+    transform: translate3d(0, var(--drift, 0px), 0) rotate(var(--r));
+  }
+
+  .tile-img {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.7);
+  }
+
+  .tile-label {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+  }
+
+  .t1 {
+    --r: -7deg;
+    left: 4%;
+    top: 16%;
+  }
+
+  .t2 {
+    --r: 5deg;
+    right: 5%;
+    top: 10%;
+  }
+
+  .t3 {
+    --r: -3deg;
+    right: 13%;
+    bottom: 6%;
+    width: clamp(100px, 11vw, 160px);
+  }
+
+  @media (max-width: 900px) {
+    .tile {
+      opacity: 0.4;
+    }
+    .t3 {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .tile {
+      display: none;
+    }
+  }
+</style>

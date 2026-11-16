@@ -1,0 +1,67 @@
+---
+/** Closing call to action on the sunlit pines, grid drawn over the photograph. It holds while the footer covers it. */
+import Photo from '../proposal-c/Photo.astro';
+---
+
+<section class="pd-section pd-dark cta" id="access" data-theme="dark" data-pin>
+  <div class="pin-inner">
+    <Photo name="forest-light" position="50% 35%" />
+    <div class="shade" aria-hidden="true"></div>
+    <div class="pd-cols" aria-hidden="true"></div>
+    <div class="pd-wrap body">
+      <div class="pd-grid">
+        <h2 class="pd-h1 pd-cell span-3" data-reveal>Bring your forest online</h2>
+        <div class="pd-cell side">
+          <p class="pd-lead" data-reveal="lines">Request early access to AboveForest and ForestLayer.</p>
+          <div class="pd-actions">
+            <a class="pd-btn pd-btn-lime" href="https://aboveforest.com">Request early access</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pin-shade"></div>
+</section>
+
+<style>
+  /* An action card: the photograph inset from the edges on the light ground the page arrives on. */
+  .cta {
+    --line: rgb(238 242 234 / 0.12);
+    --inset: clamp(12px, 2.2vw, 28px);
+    min-height: max(100svh, 640px);
+    padding: var(--inset);
+    background: var(--paper);
+  }
+
+  .pin-inner {
+    display: grid;
+    align-items: end;
+    min-height: calc(max(100svh, 640px) - var(--inset) * 2);
+    border-radius: clamp(16px, 2vw, 28px);
+  }
+
+  .shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(13 14 15 / 0.25) 0%, rgb(13 14 15 / 0.35) 50%, rgb(13 14 15 / 0.8) 100%);
+  }
+
+  .body {
+    padding-bottom: clamp(56px, 8vw, 104px);
+  }
+
+  .pd-grid {
+    align-items: end;
+    row-gap: 28px;
+  }
+
+  h2 {
+    max-width: 10ch;
+  }
+
+  .side {
+    display: grid;
+    gap: 22px;
+    padding-bottom: 8px;
+  }
+</style>

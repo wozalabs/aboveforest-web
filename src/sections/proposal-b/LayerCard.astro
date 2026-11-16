@@ -1,0 +1,70 @@
+---
+/** Glass card on the dark field: one ForestLayer object, its fields as shapes. */
+const rows = ['Structure', 'Species', 'Carbon', 'Canopy', 'Time'];
+---
+
+<div class="glass layer-card">
+  <div class="head">
+    <span>ForestLayer object</span>
+    <span class="tag">One format</span>
+  </div>
+  <ul>
+    {
+      rows.map((r, i) => (
+        <li>
+          <span class="key">{r}</span>
+          <span class="val" style={`width: ${40 + ((i * 37) % 45)}%`} aria-hidden="true" />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .layer-card {
+    width: min(460px, 100%);
+    padding: 22px 24px 24px;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  .tag {
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgb(201 242 122 / 0.9);
+    color: #1d3a26;
+    font-size: 12.5px;
+  }
+
+  ul {
+    display: grid;
+    gap: 14px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .key {
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  .val {
+    height: 8px;
+    border-radius: 4px;
+    background: rgb(255 255 255 / 0.3);
+  }
+</style>

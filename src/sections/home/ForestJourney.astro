@@ -1,0 +1,861 @@
+---
+/**
+ * The hero and the walk through the forest: one pinned stage, scroll-driven.
+ * Light while you look at the forest from above, dark once you are under the canopy, light again
+ * when you rise out of it. The panels are real HTML (readable without WebGL, by screen readers and
+ * by search engines); the script only moves them next to their trees.
+ */
+import { FEATURED_TREES } from '../../data/trees';
+import { SHOT, TIMELINE_LENGTH } from '../../data/timeline';
+
+const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+function sparkline(points: [number, number][]) {
+  const w = 300;
+  const h = 40;
+  const y0 = Math.min(...points.map((p) => p[1]));
+  const y1 = Math.max(...points.map((p) => p[1]));
+  const x0 = points[0][0];
+  const x1 = points[points.length - 1][0];
+  const xy = points.map(([x, y]) => [4 + ((x - x0) / (x1 - x0)) * (w - 8), h - 5 - ((y - y0) / (y1 - y0 || 1)) * (h - 10)]);
+  return { w, h, path: xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' '), dots: xy };
+}
+
+const trees = FEATURED_TREES.map((t, i) => {
+  const first = t.growth[0];
+  const lastG = t.growth[t.growth.length - 1];
+  return { ...t, i, spark: sparkline(t.growth), gain: lastG[1] - first[1], since: first[0] };
+});
+
+const short: Record<string, string> = { beech: 'Beech', oak: 'Oak', birch: 'Birch', alder: 'Alder', pine: 'Pine' };
+const walk = `${SHOT.enter - 0.2},${SHOT.trailEnd - 0.2}`;
+---
+
+<section class="forest" data-forest data-theme="light" style={`--length: ${TIMELINE_LENGTH.toFixed(3)}`} aria-label="A walk through a mapped forest">
+  <div class="stage" data-stage>
+    <div class="canvas" data-canvas-host></div>
+    <div class="veil" aria-hidden="true"></div>
+    <div class="top-fade" aria-hidden="true"></div>
+
+    <div class="hero" data-hero>
+      <h1>Every tree, measured from above.</h1>
+      <p class="lead">
+        AboveForest turns LiDAR and satellite imagery into a living inventory of your forest. Species, height, biomass and
+        carbon, tree by tree.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Request a demo</a>
+        <a class="btn" href="#trail" data-enter>Walk the forest</a>
+      </div>
+    </div>
+
+    <p class="hint" data-phase="0,0.25" data-on aria-hidden="true">
+      <span class="hint-track"><span class="hint-dot"></span></span>
+      Scroll to enter the forest
+    </p>
+
+    <div class="intro" id="trail" data-phase={`${SHOT.meadow + 0.75},${SHOT.enter + 0.55}`}>
+      <h2>The forest, as we see it.</h2>
+      <p>Every dot is a LiDAR return; every tree is detected and measured. The ones in colour are real: walk the trail and open them.</p>
+    </div>
+
+    <div class="markers" aria-hidden="false">
+      {
+        trees.map((t) => (
+          <button class="marker" type="button" data-marker={t.i} aria-label={`Show data for the ${t.commonName.toLowerCase()}`}>
+            <span class="marker-dot" />
+            <span class="marker-label">{t.commonName}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="panels">
+      {
+        trees.map((t) => (
+          <article class="panel" data-panel={t.i} aria-labelledby={`tree-${t.id}`} inert>
+            <div class="panel-body">
+              <header class="panel-head">
+                <h3 id={`tree-${t.id}`}>{t.commonName}</h3>
+                <p class="species">{t.scientificName}</p>
+              </header>
+
+              <div class="figure">
+                <p class="value">
+                  {fmt(t.height)}
+                  <span class="unit">m</span>
+                </p>
+                <p class="caption">Height at the apex, from LiDAR</p>
+              </div>
+
+              <dl class="metrics">
+                <div>
+                  <dt>Crown diameter</dt>
+                  <dd>
+                    {fmt(t.crown)} <span>m</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Trunk diameter</dt>
+                  <dd>
+                    {t.dbh} <span>cm</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Biomass</dt>
+                  <dd>
+                    {fmt(t.biomass)} <span>t</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Carbon stored</dt>
+                  <dd>
+                    {fmt(t.carbon)} <span>t CO₂e</span>
+                  </dd>
+                </div>
+              </dl>
+
+              <div class="rows">
+                <div class="row">
+                  <p class="row-label">Vigour</p>
+                  <p class={`row-value tone-${t.vigorTone}`}>
+                    {t.vigorLabel} <span>{fmt(t.vigor, 2)}</span>
+                  </p>
+                  <span class={`meter tone-${t.vigorTone}`} style={`--v: ${t.vigor}`} aria-hidden="true" />
+                </div>
+                <div class="row">
+                  <p class="row-label">Growth since {t.since}</p>
+                  <p class="row-value">+{fmt(t.gain)} m</p>
+                  <svg class="spark" viewBox={`0 0 ${t.spark.w} ${t.spark.h}`} width={t.spark.w} height={t.spark.h} aria-hidden="true">
+                    <path d={t.spark.path} />
+                    {t.spark.dots.map(([x, y]) => (
+                      <circle cx={x} cy={y} r="2.4" />
+                    ))}
+                  </svg>
+                </div>
+              </div>
+
+              <p class="note">{t.note}</p>
+              <p class="source">
+                {t.ref}, {t.age} years. LiDAR 2024 and Sentinel‑2.
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <nav class="stops" aria-label="Trees on the trail" data-phase={walk}>
+      {
+        trees.map((t) => (
+          <button type="button" data-goto={t.i}>
+            {short[t.id] ?? t.commonName}
+          </button>
+        ))
+      }
+    </nav>
+
+    <div class="outro" data-phase={`${SHOT.riseTop - 0.6},${SHOT.riseTop + 1}`}>
+      <h2>One tree at a time, the whole forest at once.</h2>
+    </div>
+    <div class="bottom-fade" data-phase={`${SHOT.riseTop - 0.5},${SHOT.riseTop + 1}`} aria-hidden="true"></div>
+  </div>
+</section>
+
+<script>
+  import { mountForest } from '../../scripts/forest/controller';
+  const root = document.querySelector<HTMLElement>('[data-forest]');
+  if (root) mountForest(root);
+</script>
+
+<style>
+  .forest {
+    position: relative;
+    height: calc((var(--length) + 1) * 100svh);
+    color: var(--text);
+  }
+
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    /* Until the scene is ready: the mist it will start in. */
+    background: radial-gradient(120% 80% at 70% 100%, oklch(0.9 0.02 140), var(--bg) 60%);
+  }
+
+  .canvas,
+  .canvas :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .canvas :global(canvas) {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
+  }
+
+  .forest[data-ready] .canvas :global(canvas) {
+    opacity: 1;
+  }
+
+  /* Reduced motion: the camera cuts between shots behind a short dip. */
+  .stage[data-cut] .canvas :global(canvas) {
+    opacity: 0.25;
+    transition-duration: 120ms;
+  }
+
+  /* Under the canopy, the edges of the view fall into shade. */
+  .veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 45%, transparent 55%, oklch(0.1 0.01 150 / 0.55) 100%);
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+
+  .forest[data-theme='dark'] .veil {
+    opacity: 1;
+  }
+
+  /* Light: the mist thickens behind the hero copy. Dark: a little shade under the header. */
+  .top-fade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .top-fade::before,
+  .top-fade::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transition: opacity 700ms ease;
+  }
+
+  .top-fade::before {
+    background:
+      radial-gradient(70% 60% at 18% 34%, color-mix(in oklab, var(--bg) 78%, transparent), transparent 70%),
+      linear-gradient(to bottom, color-mix(in oklab, var(--bg) 90%, transparent) 0%, transparent 46%);
+  }
+
+  .top-fade::after {
+    background: linear-gradient(to bottom, oklch(0.12 0.01 150 / 0.55), transparent 160px);
+    opacity: 0;
+  }
+
+  .forest[data-theme='dark'] .top-fade::before {
+    opacity: 0;
+  }
+
+  .forest[data-theme='dark'] .top-fade::after {
+    opacity: 1;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: absolute;
+    top: clamp(112px, 17svh, 180px);
+    left: var(--gutter);
+    right: var(--gutter);
+    max-width: 760px;
+    will-change: transform, opacity;
+  }
+
+  h1 {
+    font-size: clamp(44px, 6.2vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    color: var(--text);
+  }
+
+  .lead {
+    max-width: 520px;
+    margin-top: 24px;
+    color: var(--text-secondary);
+    font-size: clamp(17px, 1.35vw, 19px);
+    line-height: 1.5;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  /* ── Phased overlays ── */
+  [data-phase] {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 240ms ease,
+      transform 240ms var(--ease-out),
+      filter 240ms ease,
+      visibility 0s 240ms;
+  }
+
+  [data-phase][data-on] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      filter 500ms var(--ease-out),
+      visibility 0s;
+  }
+
+  .hint {
+    position: absolute;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .hint-track {
+    position: relative;
+    width: 16px;
+    height: 26px;
+    border-radius: 99px;
+    background: oklch(var(--tint) / 0.1);
+  }
+
+  .hint-dot {
+    position: absolute;
+    left: 50%;
+    top: 5px;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    animation: hint 1.8s var(--ease-in-out) infinite;
+  }
+
+  @keyframes hint {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+  }
+
+  .intro,
+  .outro {
+    position: absolute;
+    left: var(--gutter);
+    max-width: 620px;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+
+  .intro {
+    bottom: clamp(56px, 14svh, 140px);
+  }
+
+  /* Mirrors the hero: same place, same scale. */
+  .outro {
+    top: clamp(112px, 17svh, 180px);
+    left: var(--gutter);
+    max-width: 680px;
+  }
+
+  .intro[data-on],
+  .outro[data-on] {
+    transform: none;
+    filter: none;
+  }
+
+  .intro h2 {
+    font-size: clamp(34px, 4.4vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .outro h2 {
+    font-size: clamp(40px, 5.4vw, 80px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  .intro p {
+    max-width: 460px;
+    margin-top: 16px;
+    color: var(--text-secondary);
+    font-size: 18px;
+  }
+
+  .bottom-fade {
+    position: absolute;
+    inset: auto 0 0;
+    height: 42%;
+    pointer-events: none;
+    background: linear-gradient(to top, var(--bg) 8%, transparent);
+  }
+
+  /* ── Markers ── */
+  .markers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .marker[data-shown] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .marker-dot {
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: oklch(0.855 0.172 128);
+    box-shadow:
+      0 0 0 4px oklch(0.855 0.172 128 / 0.22),
+      0 0 18px oklch(0.855 0.172 128 / 0.6);
+    transition: scale 200ms var(--ease-out);
+  }
+
+  .marker-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: oklch(0.855 0.172 128 / 0.35);
+    animation: ping 2.4s var(--ease-out) infinite;
+  }
+
+  .marker[data-active] .marker-dot {
+    scale: 1.25;
+  }
+
+  .marker[data-active] .marker-dot::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    70%,
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  .marker-label {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: oklch(0.163 0.003 265 / 0.78);
+    color: oklch(0.935 0.002 265);
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-4px, -50%);
+    transition:
+      opacity 150ms ease,
+      transform 150ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .marker:not([data-active]):hover .marker-label {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+    .marker:hover .marker-dot {
+      scale: 1.2;
+    }
+  }
+
+  .marker:focus-visible .marker-label {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  /* ── Tree panels ── */
+  .panels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 340px;
+    pointer-events: none;
+  }
+
+  .panel-body {
+    padding: 20px;
+    border-radius: var(--radius-panel);
+    background: color-mix(in oklab, var(--surface) 76%, transparent);
+    backdrop-filter: blur(22px) saturate(1.4);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.07),
+      var(--shadow-pop);
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    transform-origin: 50% 40%;
+    filter: blur(4px);
+    transition:
+      opacity 180ms ease,
+      transform 200ms var(--ease-out),
+      filter 180ms ease;
+  }
+
+  .panel[data-on] {
+    pointer-events: auto;
+  }
+
+  .panel[data-on] .panel-body {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition:
+      opacity 360ms var(--ease-out) 80ms,
+      transform 520ms var(--ease-out) 80ms,
+      filter 360ms var(--ease-out) 80ms;
+  }
+
+  .panel h3 {
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  .species {
+    margin-top: 2px;
+    color: var(--text-tertiary);
+    font-size: 15px;
+  }
+
+  .figure {
+    margin-top: 18px;
+  }
+
+  .value {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .unit {
+    margin-left: 2px;
+    color: var(--text-tertiary);
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  .caption {
+    margin-top: 6px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 18px;
+  }
+
+  .metrics > div {
+    padding: 10px 12px;
+    border-radius: var(--radius-tile);
+    background: oklch(var(--tint) / 0.05);
+  }
+
+  .metrics dt {
+    color: var(--text-tertiary);
+    font-size: 12.5px;
+  }
+
+  .metrics dd {
+    margin-top: 2px;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metrics dd span {
+    color: var(--text-tertiary);
+    font-size: 13px;
+    letter-spacing: -0.01em;
+  }
+
+  .rows {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 6px 12px;
+  }
+
+  .row-label {
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+
+  .row-value {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .row-value span {
+    color: var(--text-tertiary);
+  }
+
+  .tone-watch.row-value {
+    color: var(--warn);
+  }
+
+  .meter {
+    grid-column: 1 / -1;
+    position: relative;
+    height: 6px;
+    border-radius: 99px;
+    background: oklch(var(--tint) / 0.08);
+    overflow: hidden;
+  }
+
+  .meter::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(var(--v));
+  }
+
+  .meter.tone-watch::after {
+    background: var(--warn);
+  }
+
+  .spark {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .spark path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .spark circle {
+    fill: var(--surface);
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .note {
+    margin-top: 16px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .source {
+    margin-top: 10px;
+    color: var(--text-tertiary);
+    font-size: 12.5px;
+  }
+
+  /* ── Trail nav ── */
+  .stops {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    width: max-content;
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 12px;
+    background: oklch(0.163 0.003 265 / 0.62);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.06), 0 8px 24px oklch(0 0 0 / 0.25);
+    /* One transform (not translate + transform): the CSS minifier merges the two and drops one. */
+    transform: translate(-50%, 8px);
+  }
+
+  .stops[data-on] {
+    transform: translate(-50%, 0);
+  }
+
+  .stops button {
+    height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-size: 13.5px;
+    cursor: pointer;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      scale 130ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .stops button:hover {
+      color: var(--text);
+      background: oklch(1 0 0 / 0.06);
+    }
+  }
+
+  .stops button:active {
+    scale: 0.97;
+  }
+
+  .stops button[aria-current] {
+    color: var(--text);
+    background: var(--grain), linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+    background-blend-mode: soft-light, normal;
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.08), 0 1px 2px oklch(0 0 0 / 0.4);
+  }
+
+  /* ── Without WebGL: the panels stay readable, one per stop, centred. ── */
+  @media (min-width: 48rem) {
+    .forest[data-fallback] .panel {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .forest[data-fallback] .marker {
+    display: none;
+  }
+
+  /* ── Small screens: the panel docks at the bottom, the tree stays above it. ── */
+  @media (max-width: 47.99rem) {
+    .hero {
+      top: clamp(96px, 14svh, 140px);
+    }
+
+    .panel {
+      top: auto;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      width: auto;
+      transform: none !important;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .figure {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .value {
+      font-size: 36px;
+    }
+
+    .metrics {
+      margin-top: 12px;
+    }
+
+    .caption,
+    .rows,
+    .note,
+    .source {
+      display: none;
+    }
+
+    .stops {
+      top: 80px;
+      bottom: auto;
+    }
+
+    .stops button {
+      padding: 0 9px;
+      font-size: 13px;
+    }
+
+    .intro {
+      bottom: 40px;
+    }
+
+    .marker-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hint-dot,
+    .marker-dot::after {
+      animation: none;
+    }
+    .panel-body,
+    .panel[data-on] .panel-body {
+      transform: none;
+      filter: none;
+    }
+  }
+</style>
