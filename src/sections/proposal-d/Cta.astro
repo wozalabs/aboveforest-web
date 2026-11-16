@@ -1,14 +1,14 @@
 ---
 /**
  * Closing call to action on the sunlit pines: a card that rises from
- * below tilted back and settles flat, square to the screen, as it arrives (tilt.ts). It holds while
- * the footer covers it.
+ * below tilted back and settles flat, square to the screen, as it arrives (tilt.ts). Its light
+ * surround runs straight on into the footer, with no seam.
  */
 import Photo from '../proposal-c/Photo.astro';
 ---
 
-<section class="pd-section pd-dark cta" id="access" data-theme="dark" data-pin>
-  <div class="pin-inner">
+<section class="pd-section pd-dark cta" id="access" data-theme="dark">
+  <div class="tilt-stage">
     <div class="card" data-tilt>
     <Photo name="forest-light" position="50% 35%" />
     <div class="shade" aria-hidden="true"></div>
@@ -25,7 +25,6 @@ import Photo from '../proposal-c/Photo.astro';
     </div>
     </div>
   </div>
-  <div class="pin-shade"></div>
 </section>
 
 <style>
@@ -37,10 +36,9 @@ import Photo from '../proposal-c/Photo.astro';
     background: var(--paper);
   }
 
-  /* The pin's own layer only sinks back when the footer covers it; the card inside does the tilt. */
-  .pin-inner {
-    overflow: visible;
-    background: none;
+  /* The card's perspective. */
+  .tilt-stage {
+    position: relative;
     perspective: 1600px;
     perspective-origin: 50% 0%;
   }
