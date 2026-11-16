@@ -43,8 +43,8 @@ export function mountHeroDark(root: HTMLElement, load: () => Promise<(host: HTML
     root.style.setProperty('--copy', (1 - fade).toFixed(3));
     copy.inert = fade > 0.6;
     if (hint) hint.style.opacity = String(1 - smooth(0, 0.05, p));
-    captions[0]?.toggleAttribute('data-on', p > 0.08 && p < 0.22);
-    captions[1]?.toggleAttribute('data-on', p > 0.38 && p < 0.62);
+    captions[0]?.toggleAttribute('data-on', p > 0.06 && p < 0.17);
+    captions[1]?.toggleAttribute('data-on', p > 0.28 && p < 0.6);
   }
 
   let ticking = false;

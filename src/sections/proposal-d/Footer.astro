@@ -1,5 +1,8 @@
 ---
-/** Footer on the grid: brand and three link columns, then the wordmark, cut by the bottom of the page. */
+/**
+ * Footer on the grid: brand and three link columns, then the wordmark, cut by the bottom of the page,
+ * over a glow of the brand greens rising from the bottom edge.
+ */
 import Logo from '../../components/Logo.astro';
 const year = new Date().getFullYear();
 const columns = [
@@ -37,6 +40,7 @@ const columns = [
 
 <style>
   .footer {
+    position: relative;
     overflow: hidden;
     padding-top: clamp(72px, 9vw, 112px);
     background: #0a0b0c;
@@ -87,13 +91,34 @@ const columns = [
     padding-top: 20px;
   }
 
+  /* The brand greens, lime at the bottom edge deepening to the dark green and into the ground, behind
+   * the wordmark. */
+  .footer::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    height: min(34vw, 460px);
+    background:
+      radial-gradient(70% 120% at 50% 130%, rgb(184 242 122 / 0.9) 0%, rgb(120 190 70 / 0.55) 28%, transparent 62%),
+      linear-gradient(to top, #1d3a14 0%, rgb(20 42 12 / 0.75) 32%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .footer > :not(.pd-cols) {
+    position: relative;
+    z-index: 1;
+  }
+
   /* The giant wordmark: centred on the page (a centred flex row overflows evenly on both sides),
    * a shade lighter than the ground, cut by the bottom edge. A detail, not a headline. */
   .word {
     display: flex;
     justify-content: center;
     margin: 40px 0 -0.2em;
-    color: #17191b;
+    color: rgb(10 11 12 / 0.55);
     font-size: 16.6vw;
     font-weight: 600;
     letter-spacing: -0.06em;

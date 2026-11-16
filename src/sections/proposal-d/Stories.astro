@@ -1,7 +1,8 @@
 ---
 /**
  * Stories as a horizontal track (light tone): the screen holds while the four stories slide sideways
- * with the scroll (see hscroll.ts), then the page carries on down.
+ * with the scroll (see hscroll.ts), then the page carries on down. Each story is two grid columns
+ * wide, and the column lines slide with them, so the cards stay on the grid as they move.
  */
 import Photo from '../proposal-c/Photo.astro';
 const stories = [
@@ -35,6 +36,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 <section class="stories" id="stories" data-tone="light" data-theme="light" data-hscroll>
   <div class="screen">
+    <div class="lines" data-lines aria-hidden="true"></div>
     <div class="pd-wrap">
       <div class="pd-grid head">
         <h2 class="pd-h2 pd-cell span-2" data-reveal>Where AboveForest changes the game</h2>
@@ -43,22 +45,19 @@ const pad = (n: number) => String(n).padStart(2, '0');
     </div>
     <ol class="track" data-track role="list">
       {
-        stories.map((s, i) => (
+        stories.map((s) => (
           <li class="story">
             <div class="pd-frame img">
-              <Photo name={s.photo} sizes="(max-width: 900px) 80vw, 560px" />
+              <Photo name={s.photo} sizes="(max-width: 900px) 90vw, 680px" />
             </div>
-            <div class="meta">
-              <span class="pd-label">{pad(i + 1)}</span>
-              <div class="text">
-                <h3 class="pd-h4">{s.title}</h3>
-                <p class="pd-body">{s.body}</p>
-                <ul class="pd-chips" aria-label="Topics">
-                  {s.tags.map((t) => (
-                    <li>{t}</li>
-                  ))}
-                </ul>
-              </div>
+            <div class="text">
+              <h3 class="pd-h4">{s.title}</h3>
+              <p class="pd-body">{s.body}</p>
+              <ul class="pd-chips" aria-label="Topics">
+                {s.tags.map((t) => (
+                  <li>{t}</li>
+                ))}
+              </ul>
             </div>
           </li>
         ))
@@ -69,12 +68,18 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 <style>
   .screen {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-content: center;
     gap: clamp(40px, 5vw, 64px);
     padding-block: clamp(96px, 12vw, 160px);
     overflow: hidden;
+  }
+
+  .screen > :not(.lines) {
+    position: relative;
+    z-index: 1;
   }
 
   /* With the script: one screen that holds while the track slides. */
@@ -87,6 +92,29 @@ const pad = (n: number) => String(n).padStart(2, '0');
     padding-block: clamp(72px, 11svh, 120px);
   }
 
+  /* The column lines of this screen, which slide with the track (hscroll.ts sizes and moves them; the
+     page's still lines are masked out here). Without the script the page's own lines show. */
+  .lines {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--edge);
+    z-index: 0;
+    background: linear-gradient(to right, var(--line) 1px, transparent 1px) 0 0 / var(--col, 25%) 100%;
+    box-shadow: inset -1px 0 0 var(--line);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  .stories[data-live] .lines {
+    display: block;
+  }
+
+  .stories {
+    --edge: max(var(--pd-pad), calc((100% - var(--pd-max)) / 2));
+  }
+
   .head {
     align-items: end;
   }
@@ -96,7 +124,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
 
   .track {
-    --edge: max(var(--pd-pad), calc((100% - var(--pd-max)) / 2));
     display: flex;
     gap: 0;
     margin: 0;
@@ -110,12 +137,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
     overflow: visible;
   }
 
+  /* Two columns of the grid (the whole width on phones, where the grid has two). */
   .story {
     flex: none;
     display: grid;
     align-content: start;
     gap: 22px;
-    width: clamp(300px, 34vw, 500px);
+    width: 50%;
     padding-inline: var(--cell);
   }
 
@@ -123,12 +151,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .img {
     aspect-ratio: 16 / 10;
     max-height: 38svh;
-  }
-
-  .meta {
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 12px;
   }
 
   .text {
@@ -146,7 +168,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   @media (max-width: 900px) {
     .story {
-      width: 82vw;
+      width: 100%;
     }
     .count {
       display: none;

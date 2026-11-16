@@ -4,8 +4,9 @@
  *   conical crowns, a little ground), each with its own delay and pace.
  * - As you scroll the forest resolves into a map of stands seen in isometric view: an irregular
  *   tessellation (see src/data/stands.ts) drawn in points, its boundaries bright and a quiet dot grid
- *   inside. Every area touches its neighbours. Hover (or tap) an area: it lights up, hatched like the
- *   app's selection, and a card shows the trees in it.
+ *   inside. Every area touches its neighbours and has a number. Hover an area and it lights up,
+ *   hatched like the app's selection; click it (or its number) and a panel opens at the bottom left
+ *   with the trees in it.
  * Both point layouts are attributes; the motion runs on the GPU.
  */
 import {
@@ -238,7 +239,8 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
         gl_Position = projectionMatrix * mv;
         float hovered = (uHover >= 0.0 && abs(aCell - uHover) < 0.5) ? 1.0 : 0.0;
         float size = mix(0.8, 1.6, aTone) * (1.0 - t2) + mix(mix(1.6, 2.4, hovered), 1.5, aEdge) * t2;
-        gl_PointSize = uSize * uPixel * size * (120.0 / -mv.z);
+        // The map camera stands twice as far back; keep its dots the same size on screen.
+        gl_PointSize = uSize * uPixel * size * (120.0 / -mv.z) * mix(1.0, 2.0, uScroll);
 
         vec3 dim = vec3(0.62, 0.68, 0.62);
         vec3 lime = vec3(0.72, 0.95, 0.48);
@@ -301,14 +303,15 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
     return { fill, line };
   });
 
-  // Camera: oblique over the forest, then swinging round to an isometric view of the map (a long,
-  // narrow lens from 45 degrees, so it reads nearly orthographic).
+  // Camera: oblique over the forest, then rising to a near-isometric view of the map, square to the
+  // screen (its edges run parallel to the screen's horizontal), with a long, narrow lens so it reads
+  // nearly orthographic.
   const posA = new Vector3(0, 30, 44);
   const lookA = new Vector3(0, 4, -4);
-  const posB = new Vector3(60, 54, 60);
-  const lookB = new Vector3(0, 0, 0);
+  const posB = new Vector3(0, 150, 152);
+  const lookB = new Vector3(0, 0, 5);
   let fovA = 42;
-  let fovB = 32;
+  let fovB = 18;
   const pos = new Vector3();
   const look = new Vector3();
 
@@ -324,50 +327,83 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
     // Portrait screens see less width: a wider lens so the field still fills them.
     const portrait = camera.aspect < 0.9;
     fovA = portrait ? 62 : 42;
-    fovB = portrait ? 58 : 32;
+    // On a phone the map sits in the upper half, leaving the lower half for its panel.
+    lookB.z = portrait ? 24 : 5;
+    // Fit the map: its full width on wide screens (a little cropped on phones), and enough height for
+    // its depth with room above and for the panel below.
+    const dist = posB.distanceTo(lookB);
+    const deg = (half: number) => MathUtils.radToDeg(2 * Math.atan(half / dist));
+    const fitWidth = deg((portrait ? 38 : 51) / camera.aspect);
+    const fitDepth = deg(34);
+    fovB = Math.max(fitWidth, fitDepth);
     camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(host);
   resize();
 
-  // ── Hover: which stand is under the pointer, and its card. ──
+  // ── The map: numbered stands; hover lights one up, a click (or tap, or Enter on its number)
+  // opens its panel at the bottom left. ──
   const root = host.closest<HTMLElement>('[data-hero-dark]');
   const stage = host.closest<HTMLElement>('[data-stage]') ?? host;
-  const card = root?.querySelector<HTMLElement>('[data-zone-card]') ?? null;
-  const fields = card ? Object.fromEntries(Array.from(card.querySelectorAll<HTMLElement>('[data-f]')).map((el) => [el.dataset.f!, el])) : {};
+  const labels = Array.from(root?.querySelectorAll<HTMLButtonElement>('[data-stand]') ?? []);
+  const panel = root?.querySelector<HTMLElement>('[data-stand-panel]') ?? null;
+  const fields = panel ? Object.fromEntries(Array.from(panel.querySelectorAll<HTMLElement>('[data-f]')).map((el) => [el.dataset.f!, el])) : {};
   const ray = new Raycaster();
   const ground = new Plane(new Vector3(0, 1, 0), 0);
   const ndc = new Vector2();
   const hit = new Vector3();
+  const tip = new Vector3();
   let hovered = -1;
+  let selected = -1;
   let mapOn = false;
   let alpha = 0;
-  let pointer: { x: number; y: number } | null = null;
   const fmt = (n: number, d = 0) => n.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  function paint() {
+    selections.forEach((sel, i) => {
+      const on = i === hovered || i === selected;
+      sel.fill.visible = on;
+      sel.line.visible = on;
+    });
+    uniforms.uHover.value = selected >= 0 ? selected : hovered;
+    labels.forEach((l, i) => {
+      l.toggleAttribute('data-active', i === selected);
+      l.toggleAttribute('data-hover', i === hovered);
+    });
+  }
 
   function setHover(i: number) {
     if (i === hovered) return;
-    if (hovered >= 0) {
-      selections[hovered].fill.visible = false;
-      selections[hovered].line.visible = false;
-    }
     hovered = i;
-    uniforms.uHover.value = i;
+    paint();
+  }
+
+  function select(i: number) {
+    selected = i;
     alpha = 0;
-    if (i >= 0) {
-      selections[i].fill.visible = true;
-      selections[i].line.visible = true;
-      const s = STANDS[i];
-      if (fields.id) fields.id.textContent = s.id;
-      if (fields.species) fields.species.textContent = s.species;
-      if (fields.latin) fields.latin.textContent = s.latin;
-      if (fields.type) fields.type.textContent = `${s.type}, ${s.share}%`;
-      if (fields.area) fields.area.textContent = `${fmt(s.area, 2)} ha`;
-      if (fields.trees) fields.trees.textContent = fmt(s.trees);
-      if (fields.height) fields.height.textContent = `${fmt(s.height, 1)} m`;
-      if (fields.carbon) fields.carbon.textContent = `${fmt(s.carbon)} t CO₂e`;
+    paint();
+    root?.toggleAttribute('data-picked', i >= 0);
+    if (!panel) return;
+    if (i < 0) {
+      panel.removeAttribute('data-on');
+      return;
     }
-    card?.toggleAttribute('data-on', i >= 0);
+    const s = STANDS[i];
+    const set = (k: string, v: string) => fields[k] && (fields[k].textContent = v);
+    set('num', pad(i + 1));
+    set('id', s.id);
+    set('species', s.species);
+    set('latin', s.latin);
+    set('area', fmt(s.area, 2));
+    set('share', `${s.share}%`);
+    set('rest', `${100 - s.share}%`);
+    set('type', s.type);
+    set('trees', fmt(s.trees));
+    set('height', `${fmt(s.height, 1)} m`);
+    set('carbon', `${fmt(s.carbon)} t CO₂e`);
+    panel.style.setProperty('--share', String(s.share / 100));
+    panel.setAttribute('data-on', '');
   }
 
   function pick(clientX: number, clientY: number) {
@@ -378,31 +414,39 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
     return standAt(hit.x, hit.z);
   }
 
-  function placeCard() {
-    if (!card || !pointer || hovered < 0) return;
-    const r = stage.getBoundingClientRect();
-    const cw = card.offsetWidth;
-    const ch = card.offsetHeight;
-    let x = pointer.x - r.left + 18;
-    let y = pointer.y - r.top + 18;
-    if (x + cw > r.width - 12) x = pointer.x - r.left - cw - 18;
-    if (y + ch > r.height - 12) y = pointer.y - r.top - ch - 18;
-    card.style.transform = `translate3d(${Math.max(12, x).toFixed(0)}px, ${Math.max(12, y).toFixed(0)}px, 0)`;
-  }
-
+  const onMap = (e: Event) => !(e.target as HTMLElement).closest('[data-stand-panel], [data-stand], a, button');
   stage.addEventListener('pointermove', (e) => {
-    if (!mapOn) return;
-    pointer = { x: e.clientX, y: e.clientY };
+    if (!mapOn || !onMap(e)) return;
     setHover(pick(e.clientX, e.clientY));
-    placeCard();
-  });
-  stage.addEventListener('pointerdown', (e) => {
-    if (!mapOn) return;
-    pointer = { x: e.clientX, y: e.clientY };
-    setHover(pick(e.clientX, e.clientY));
-    placeCard();
   });
   stage.addEventListener('pointerleave', () => setHover(-1));
+  stage.addEventListener('click', (e) => {
+    if (!mapOn || !onMap(e)) return;
+    const i = pick(e.clientX, e.clientY);
+    select(i === selected ? -1 : i);
+  });
+  labels.forEach((l, i) => {
+    l.addEventListener('click', () => select(i === selected ? -1 : i));
+    l.addEventListener('pointerenter', () => setHover(i));
+    l.addEventListener('pointerleave', () => setHover(-1));
+  });
+  panel?.querySelector('[data-close]')?.addEventListener('click', () => {
+    const was = selected;
+    select(-1);
+    labels[was]?.focus();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && selected >= 0) select(-1);
+  });
+
+  /** Numbers on the stands: placed over each centroid, only while the map is up. */
+  function placeLabels() {
+    labels.forEach((l, i) => {
+      const [x, z] = STANDS[i].centroid;
+      tip.set(x, 0, z).project(camera);
+      l.style.transform = `translate3d(${((tip.x * 0.5 + 0.5) * width).toFixed(1)}px, ${((-tip.y * 0.5 + 0.5) * height).toFixed(1)}px, 0)`;
+    });
+  }
 
   let raf = 0;
   let running = false;
@@ -433,8 +477,13 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
     if (on !== mapOn) {
       mapOn = on;
       root?.toggleAttribute('data-map', on);
-      if (!on) setHover(-1);
+      labels.forEach((l) => (l.tabIndex = on ? 0 : -1));
+      if (!on) {
+        setHover(-1);
+        select(-1);
+      }
     }
+    if (on) placeLabels();
     // The selection fades in.
     alpha = Math.min(1, alpha + dt * 6);
     hatch.uniforms.uAlpha.value = alpha;
@@ -446,7 +495,7 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
   renderer.render(scene, camera);
   return {
     setProgress(p) {
-      target = MathUtils.smoothstep(p, 0.04, 0.34);
+      target = MathUtils.smoothstep(p, 0.03, 0.26);
       if (reduce) k = target;
     },
     start() {

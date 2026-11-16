@@ -1,7 +1,7 @@
 /**
  * Expanding photograph: the frame starts as the middle two columns of the grid and opens to the full
  * screen over the first half of the section's scroll; the photo settles from a slight zoom as it
- * opens. Then the photograph dims and the line and the app rise onto it. Writes only CSS variables
+ * opens. Then the photograph dims, the title fades in and the app slides up from the bottom edge. Writes only CSS variables
  * (clip-path, transform, opacity).
  */
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -46,7 +46,8 @@ export function mountExpand() {
     s.setProperty('--rad', `${(6 * (1 - k)).toFixed(2)}px`);
     s.setProperty('--zoom', (1.18 - 0.18 * k).toFixed(4));
     // Once the frame is open, the product arrives.
-    o.setProperty('--over', ease(clamp((p - 0.5) / 0.22, 0, 1)).toFixed(3));
+    o.setProperty('--over', ease(clamp((p - 0.5) / 0.2, 0, 1)).toFixed(3));
+    o.setProperty('--app', ease(clamp((p - 0.56) / 0.3, 0, 1)).toFixed(4));
   }
 
   let ticking = false;

@@ -225,17 +225,21 @@
   }
 }
 
-/* ── Buttons ── */
+/* ── Buttons ──
+ * Three levels, with the app's corner radius (about 12px), not pills:
+ * primary   .pd-btn-primary   lime, the one action that matters on screen;
+ * secondary .pd-btn-secondary dark green on dark grounds, near-black on light ones;
+ * tertiary  .pd-btn           quiet grey. */
 .pd-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 44px;
-  padding: 0 20px;
+  padding: 0 18px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 12px;
   background: color-mix(in srgb, var(--fg, #eef2ea) 8%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg, #eef2ea) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg, #eef2ea) 10%, transparent);
   color: var(--fg, var(--on-night));
   font: inherit;
   font-size: 14.5px;
@@ -249,27 +253,40 @@
     transform 160ms var(--ease);
 }
 
-.pd-btn-lime {
+.pd-btn-primary {
   background: var(--lime);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45);
   color: var(--lime-ink);
 }
 
-.pd-btn-solid {
-  background: var(--fg);
+.pd-btn-secondary {
+  background: #1a2a1c;
+  box-shadow: inset 0 0 0 1px rgb(184 242 122 / 0.14);
+  color: var(--on-night);
+}
+
+/* On light grounds the secondary goes near-black. */
+.pd-light .pd-btn-secondary,
+[data-ink='light'] .pd-btn-secondary,
+.header[data-theme='light'] .pd-btn-secondary {
+  background: var(--ink);
   box-shadow: none;
-  color: var(--bg);
+  color: var(--paper);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .pd-btn:hover {
     background: color-mix(in srgb, var(--fg, #eef2ea) 14%, transparent);
   }
-  .pd-btn-lime:hover {
+  .pd-btn-primary:hover {
     background: #c8f792;
   }
-  .pd-btn-solid:hover {
-    background: color-mix(in srgb, var(--fg) 86%, var(--bg));
+  .pd-btn-secondary:hover {
+    background: #22372a;
+  }
+  .pd-light .pd-btn-secondary:hover,
+  [data-ink='light'] .pd-btn-secondary:hover {
+    background: #26302a;
   }
 }
 
@@ -290,8 +307,8 @@
 }
 
 .pd-chips li {
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 3px 9px;
+  border-radius: 7px;
   background: color-mix(in srgb, var(--fg) 7%, transparent);
   color: var(--fg-2);
   font-size: 12.5px;

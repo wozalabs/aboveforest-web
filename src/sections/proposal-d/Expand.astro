@@ -2,9 +2,9 @@
 /**
  * The bridge from the problem to the platform: the forest from above starts as a frame in the middle
  * two columns of the grid and grows until it fills the screen; then the photograph dims and the
- * product rises onto it: the title centred on top and the AboveForest app below, whole, with room
- * around it at any screen size. Scroll-scrubbed (see expand.ts); with reduced motion it is the
- * dimmed photograph with the line and the app, still.
+ * product arrives: the title fades in centred on top, and the AboveForest app slides up from the
+ * bottom edge, as wide as the grid, cropped by the bottom of the screen. Scroll-scrubbed (see
+ * expand.ts); with reduced motion it is the dimmed photograph with the line and the app, still.
  */
 const base = `${import.meta.env.BASE_URL}proposal-d/`;
 const set = (name: string) => ({
@@ -31,7 +31,7 @@ const app = set('app-1');
         <img
           src={app.src}
           srcset={app.srcset}
-          sizes="(max-width: 1376px) 92vw, 1240px"
+          sizes="(max-width: 1376px) 96vw, 1320px"
           alt="The AboveForest app: a forest map with a stand outlined in lime, the list of stands on the left and the stand's summary on the right."
           width="2400"
           height="1350"
@@ -101,8 +101,8 @@ const app = set('app-1');
   }
 
   /* ── The title and the app ── */
-  /* A column: the title centred on top at its own height, the app filling what is left below it,
-     always whole (it shrinks to fit the height or the width, whichever runs out first). */
+  /* A column: the title centred on top, the app below it at the full width of the grid, running off
+     the bottom of the screen (cropped there). */
   .over {
     position: absolute;
     left: 0;
@@ -114,9 +114,6 @@ const app = set('app-1');
     flex-direction: column;
     gap: var(--air);
     padding-top: var(--air);
-    padding-bottom: var(--air);
-    opacity: var(--over, 1);
-    transform: translateY(calc((1 - var(--over, 1)) * 40px));
     pointer-events: none;
   }
 
@@ -127,37 +124,34 @@ const app = set('app-1');
     color: var(--on-night);
     text-align: center;
     text-wrap: balance;
+    opacity: var(--over, 1);
+    transform: translateY(calc((1 - var(--over, 1)) * 24px));
   }
 
+  /* When the app is shorter than the space (phones), it sits on the bottom edge all the same. */
   .app {
+    position: relative;
     flex: 1;
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    flex-direction: column;
     min-height: 0;
     margin: 0;
-    padding-inline: var(--cell);
+    overflow: hidden;
   }
 
+  /* Rises from below the bottom edge; top corners rounded like the app's own. */
   .app img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
+    display: block;
+    flex: none;
+    margin-top: auto;
+    width: 100%;
     height: auto;
-    border-radius: 12px;
+    border-radius: 12px 12px 0 0;
     box-shadow:
-      0 0 0 1px rgb(238 240 236 / 0.08),
-      0 40px 90px -30px rgb(0 0 0 / 0.9),
-      0 0 80px -20px rgb(184 242 122 / 0.12);
-    transform: translateY(calc((1 - var(--over, 1)) * 60px)) scale(calc(0.96 + var(--over, 1) * 0.04));
-    transform-origin: 50% 100%;
-  }
-
-  /* On narrow screens the app is limited by the width, so it sits in the middle of the space left. */
-  @media (max-width: 900px) {
-    .app {
-      align-items: center;
-    }
+      0 0 0 1px rgb(238 240 236 / 0.1),
+      0 -30px 90px -30px rgb(184 242 122 / 0.14);
+    transform: translateY(calc((1 - var(--app, 1)) * 100%));
+    will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
