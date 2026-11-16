@@ -1,6 +1,6 @@
 ---
 /**
- * Closing call to action on the sunlit pines, grid drawn over the photograph: a card that rises from
+ * Closing call to action on the sunlit pines: a card that rises from
  * below tilted back and settles flat, square to the screen, as it arrives (tilt.ts). It holds while
  * the footer covers it.
  */
@@ -12,7 +12,6 @@ import Photo from '../proposal-c/Photo.astro';
     <div class="card" data-tilt>
     <Photo name="forest-light" position="50% 35%" />
     <div class="shade" aria-hidden="true"></div>
-    <div class="pd-cols" aria-hidden="true"></div>
     <div class="pd-wrap body">
       <div class="pd-grid">
         <h2 class="pd-h1 pd-cell span-3" data-reveal>Bring your forest online</h2>
@@ -32,7 +31,6 @@ import Photo from '../proposal-c/Photo.astro';
 <style>
   /* An action card: the photograph inset from the edges on the light ground the page arrives on. */
   .cta {
-    --line: rgb(238 242 234 / 0.12);
     --inset: clamp(12px, 2.2vw, 28px);
     min-height: max(100svh, 640px);
     padding: var(--inset);

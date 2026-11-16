@@ -25,6 +25,7 @@ const app = set('app-1');
       <div class="shade" aria-hidden="true"></div>
     </div>
 
+    <div class="glow" aria-hidden="true"></div>
     <div class="pd-wrap over" data-over>
       <h2 class="pd-h2 head">See your forest come alive</h2>
       <figure class="app">
@@ -109,7 +110,7 @@ const app = set('app-1');
     right: 0;
     top: 64px;
     bottom: 0;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     gap: var(--air);
@@ -129,6 +130,43 @@ const app = set('app-1');
   }
 
   /* When the app is shorter than the space (phones), it sits on the bottom edge all the same. */
+  /* A soft lime light rising behind the app. Its own layer, wider than the screen and fading to zero
+     at its own edges (closest-side), so no box edge ever shows; eased stops and grain, so no bands. */
+  .glow {
+    position: absolute;
+    left: 50%;
+    bottom: -38svh;
+    z-index: 2;
+    width: 130vw;
+    height: 110svh;
+    translate: -50% 0;
+    background: radial-gradient(
+      closest-side,
+      rgb(184 242 122 / 0.2) 0%,
+      rgb(184 242 122 / 0.17) 14%,
+      rgb(170 230 110 / 0.125) 30%,
+      rgb(140 200 90 / 0.08) 46%,
+      rgb(111 155 69 / 0.045) 61%,
+      rgb(80 120 50 / 0.02) 75%,
+      rgb(50 80 30 / 0.006) 88%,
+      rgb(35 51 26 / 0) 100%
+    );
+    opacity: var(--app, 1);
+    pointer-events: none;
+  }
+
+  .glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grain);
+    background-size: 180px;
+    mix-blend-mode: overlay;
+    opacity: 0.35;
+    mask-image: radial-gradient(closest-side, #000, transparent);
+    -webkit-mask-image: radial-gradient(closest-side, #000, transparent);
+  }
+
   .app {
     position: relative;
     flex: 1;
@@ -147,9 +185,7 @@ const app = set('app-1');
     width: 100%;
     height: auto;
     border-radius: 12px 12px 0 0;
-    box-shadow:
-      0 0 0 1px rgb(238 240 236 / 0.1),
-      0 -30px 90px -30px rgb(184 242 122 / 0.14);
+    box-shadow: 0 0 0 1px rgb(238 240 236 / 0.1);
     transform: translateY(calc((1 - var(--app, 1)) * 100%));
     will-change: transform;
   }

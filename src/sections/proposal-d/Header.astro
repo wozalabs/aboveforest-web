@@ -1,5 +1,9 @@
 ---
-/** Fixed header; light or dark with the sheet underneath (see header-theme.ts). */
+/**
+ * Fixed header; light or dark with the sheet underneath (see header-theme.ts). No box: behind it the
+ * page blurs and tints most at the top and less on the way down, fading out below the bar, so the
+ * grid lines and content pass softly under it.
+ */
 import Logo from '../../components/Logo.astro';
 const links = [
   { label: 'Platform', href: '#platform' },
@@ -10,7 +14,7 @@ const links = [
 ---
 
 <header class="header" data-header data-theme="light">
-  <div class="pd-cols" aria-hidden="true"></div>
+  <div class="veil" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="pd-wrap bar">
     <a class="brand" href="#top" aria-label="AboveForest, top of the page"><Logo class="logo" /></a>
     <nav class="nav" aria-label="Main">{links.map((l) => <a href={l.href}>{l.label}</a>)}</nav>
@@ -20,47 +24,87 @@ const links = [
 
 <style>
   .header {
-    --bg: rgb(242 243 245 / 0.72);
+    --tint: 242 243 245;
     --fg: var(--ink);
     --fg-2: var(--ink-2);
+    --fade: 120px;
     position: fixed;
     inset: 0 0 auto;
     z-index: 100;
-    background: var(--bg);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
     color: var(--fg);
-    --line: rgb(17 26 20 / 0.09);
     transition:
-      background-color 300ms ease,
       color 300ms ease,
       transform 420ms var(--ease);
   }
 
+  .header[data-theme='dark'] {
+    --tint: 13 14 15;
+    --fg: var(--on-night);
+    --fg-2: var(--on-night-2);
+  }
+
   /* Hidden while reading down, back as soon as you scroll up. It is fixed, so nothing below moves. */
   .header[data-hidden] {
-    transform: translateY(-100%);
+    transform: translateY(calc(-1 * var(--fade)));
   }
 
   .header:focus-within {
     transform: none;
   }
 
-  /* The page's column lines run through the header too. */
-  .header :global(.pd-cols) {
-    z-index: 0;
+  /* A progressive blur: three layers, each blurring more and reaching less far down, under a tint that
+   * eases out (many stops, so no visible step). Taller than the bar, so it ends below it. */
+  .veil {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--fade);
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--tint) / 0.82) 0%,
+      rgb(var(--tint) / 0.74) 18%,
+      rgb(var(--tint) / 0.6) 34%,
+      rgb(var(--tint) / 0.43) 48%,
+      rgb(var(--tint) / 0.27) 61%,
+      rgb(var(--tint) / 0.14) 73%,
+      rgb(var(--tint) / 0.06) 84%,
+      rgb(var(--tint) / 0.015) 93%,
+      rgb(var(--tint) / 0) 100%
+    );
+    transition: background-color 300ms ease;
+  }
+
+  .veil i {
+    position: absolute;
+    inset: 0;
+  }
+
+  .veil i:nth-child(1) {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+  }
+
+  .veil i:nth-child(2) {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    mask-image: linear-gradient(to bottom, #000 25%, transparent 72%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent 72%);
+  }
+
+  .veil i:nth-child(3) {
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    mask-image: linear-gradient(to bottom, #000 0%, transparent 52%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 52%);
   }
 
   .bar {
     position: relative;
     z-index: 1;
-  }
-
-  .header[data-theme='dark'] {
-    --line: rgb(238 240 236 / 0.09);
-    --bg: rgb(13 14 15 / 0.62);
-    --fg: var(--on-night);
-    --fg-2: var(--on-night-2);
   }
 
   .bar {

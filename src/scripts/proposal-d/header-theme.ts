@@ -25,7 +25,9 @@ export function mountHeaderTheme() {
     const hit = document
       .elementsFromPoint(window.innerWidth / 2, y)
       .find((el) => !header.contains(el) && el.closest('[data-theme]'));
-    const t = hit?.closest<HTMLElement>('[data-theme]')?.dataset.theme ?? 'dark';
+    // Inside a colour-morph zone the sections take the zone's ground, whatever their own tone.
+    const zone = hit?.closest<HTMLElement>('[data-morph]');
+    const t = (zone ?? hit?.closest<HTMLElement>('[data-theme]'))?.dataset.theme ?? 'dark';
     if (t !== last) {
       last = t;
       header.dataset.theme = t;
@@ -45,5 +47,8 @@ export function mountHeaderTheme() {
   // The hero changes theme on its own as the camera goes down into the forest.
   const hero = document.querySelector('[data-hero3d]');
   if (hero) new MutationObserver(schedule).observe(hero, { attributes: true, attributeFilter: ['data-theme'] });
+  // So does a morph zone when its wipe finishes.
+  const mo = new MutationObserver(schedule);
+  document.querySelectorAll('[data-morph]').forEach((z) => mo.observe(z, { attributes: true, attributeFilter: ['data-theme'] }));
   update();
 }

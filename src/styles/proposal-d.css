@@ -229,7 +229,8 @@
  * Three levels, with the app's corner radius (about 12px), not pills:
  * primary   .pd-btn-primary   lime, the one action that matters on screen;
  * secondary .pd-btn-secondary dark green on dark grounds, near-black on light ones;
- * tertiary  .pd-btn           quiet grey. */
+ * tertiary  .pd-btn           quiet grey.
+ * No borders: each is a flat fill. */
 .pd-btn {
   display: inline-flex;
   align-items: center;
@@ -238,8 +239,7 @@
   padding: 0 18px;
   border: 0;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--fg, #eef2ea) 8%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg, #eef2ea) 10%, transparent);
+  background: color-mix(in srgb, var(--fg, #eef2ea) 9%, transparent);
   color: var(--fg, var(--on-night));
   font: inherit;
   font-size: 14.5px;
@@ -255,13 +255,11 @@
 
 .pd-btn-primary {
   background: var(--lime);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45);
   color: var(--lime-ink);
 }
 
 .pd-btn-secondary {
   background: #1a2a1c;
-  box-shadow: inset 0 0 0 1px rgb(184 242 122 / 0.14);
   color: var(--on-night);
 }
 
@@ -270,7 +268,6 @@
 [data-ink='light'] .pd-btn-secondary,
 .header[data-theme='light'] .pd-btn-secondary {
   background: var(--ink);
-  box-shadow: none;
   color: var(--paper);
 }
 

@@ -58,6 +58,8 @@ const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDig
     <div class="pd-wrap panel-wrap">
       <div class="pd-grid">
         <aside class="pd-cell span-2 panel" data-stand-panel aria-live="polite">
+          <div class="pd-tree panel-tree" data-panel-tree data-ground="dark" aria-hidden="true"></div>
+          <div class="panel-main">
           <div class="panel-head">
             <p class="panel-num" data-f="num"></p>
             <div>
@@ -80,6 +82,7 @@ const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDig
               <div><dt>Mean height</dt><dd data-f="height"></dd></div>
               <div><dt>Carbon</dt><dd data-f="carbon"></dd></div>
             </dl>
+          </div>
           </div>
         </aside>
       </div>
@@ -295,8 +298,11 @@ const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDig
     pointer-events: none;
   }
 
-  /* Its edges sit on the column lines. */
+  /* Its edges sit on the column lines. The stand's tree on the left, its figures on the right. */
   .panel {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.62fr) 2fr;
+    gap: 4px;
     padding: 18px 20px 20px;
     border-radius: 12px;
     background: rgb(13 14 15 / 0.82);
@@ -317,6 +323,17 @@ const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDig
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+
+  .panel-tree {
+    min-height: 0;
+    margin: -18px 0 -20px -20px;
+    border-radius: 12px 0 0 12px;
+    background: radial-gradient(80% 60% at 50% 72%, rgb(184 242 122 / 0.08), transparent 70%);
+  }
+
+  .panel-main {
+    min-width: 0;
   }
 
   .panel-head {
@@ -487,7 +504,11 @@ const fmt = (n: number, d = 1) => n.toLocaleString('en-GB', { minimumFractionDig
       bottom: 72px;
     }
     .panel {
+      grid-template-columns: 96px 1fr;
       padding: 14px 16px 16px;
+    }
+    .panel-tree {
+      margin: -14px 0 -16px -16px;
     }
     .panel-body {
       grid-template-columns: 1fr;

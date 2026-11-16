@@ -31,6 +31,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import type { DarkScene } from './hero-dark';
+import type { TreeView } from './tree-spin';
 import { FIELD, STANDS, standAt } from '../../data/stands';
 
 const { W, D } = FIELD;
@@ -360,6 +361,34 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
   const fmt = (n: number, d = 0) => n.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
   const pad = (n: number) => String(n).padStart(2, '0');
 
+  // The panel's tree: the stand's main species, turning on its patch of ground (tree-spin.ts).
+  const MODELS: Record<string, string> = {
+    'European beech': 'tree-haya',
+    'Pedunculate oak': 'tree-roble',
+    'Maritime pine': 'tree-pino',
+    'Scots pine': 'tree-conifera',
+    'Silver birch': 'tree-abedul',
+    'Sweet chestnut': 'tree-castano',
+    'Black alder': 'tree-ribera',
+  };
+  const treeHost = panel?.querySelector<HTMLElement>('[data-panel-tree]') ?? null;
+  let tree: Promise<TreeView | null> | null = null;
+  function showTree(species: string | null) {
+    if (!treeHost) return;
+    if (!species) {
+      tree?.then((t) => t?.stop());
+      return;
+    }
+    tree ??= import('./tree-spin')
+      .then((m) => m.createTreeView(treeHost, reduce))
+      .catch(() => null);
+    tree.then((t) => {
+      if (!t) return;
+      t.show(MODELS[species] ?? 'tree-haya');
+      t.start();
+    });
+  }
+
   function paint() {
     selections.forEach((sel, i) => {
       const on = i === hovered || i === selected;
@@ -387,9 +416,11 @@ export async function createField(host: HTMLElement, reduce: boolean): Promise<D
     if (!panel) return;
     if (i < 0) {
       panel.removeAttribute('data-on');
+      showTree(null);
       return;
     }
     const s = STANDS[i];
+    showTree(s.species);
     const set = (k: string, v: string) => fields[k] && (fields[k].textContent = v);
     set('num', pad(i + 1));
     set('id', s.id);
